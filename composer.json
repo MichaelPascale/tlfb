@@ -1,0 +1,15 @@
+{
+    "name": "cam/tlfb",
+    "description": "Timeline-followback application for use across CAM.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Pascale",
+            "email": "mppascale@mgh.harvard.edu"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "vlucas/phpdotenv": "^5.3"
+    }
+}

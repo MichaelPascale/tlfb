@@ -1,4 +1,6 @@
 // Define Globals
+// EVENT_NAME, SECONDARY_ID, LAST_VISIT defined in index.php.
+const GET = new URLSearchParams(window.location.search);
 var MODE = '';                  // Event-adding mode (substance event or key date).
 var CAL = null;                 // The FullCalendar object.
 var CUR_EVT = '';               // The calendar date currently being edited.
@@ -134,41 +136,27 @@ $(document).ready(function () {
      $.getJSON('studies.json', function (data) {
         STUDIES = data;
 
-        if (Object.keys(POST).length) {
-            let study = STUDIES.filter(function (x) {return x.name == POST.study})[0];
-            let evt_index = study.redcap_events.indexOf(POST.event);
+        let study = STUDIES[GET.get('pid')];
+        let evt_index = study.redcap_events.indexOf(GET.get('event'));
 
-            // Followup visits.
-            if (evt_index > 0) {
-                DATE_FROM = dayjs(LAST_VISIT.substring(0, 10), 'YYYY-MM-DD').toDate();
+        // Followup visits.
+        if (evt_index > 0) {
+            DATE_FROM = dayjs(LAST_VISIT.substring(0, 10), 'YYYY-MM-DD').toDate();
 
-            // Screen visit.
-            } else {
-                DATE_FROM.setDate(DATE_TO.getDate() - study.days[evt_index]);
-                DATE_30.setDate(DATE_TO.getDate() - 30);
-                DATE_90.setDate(DATE_TO.getDate() - 90);
-            }
-
-            let days = dayjs(DATE_TO).diff(DATE_FROM, 'day');
-            CAL.setOption('validRange', { start: DATE_FROM, end: DATE_TO });
-            $('#days').text(days);
-            $('#substance-list-days').text(days);
-            $('#date-from').text(DATE_FROM.toDateString());
-            $('#date-to').text(DATE_TO.toDateString());
-            $('#substance-list-since').text(`Since ${DATE_FROM.toDateString()}`);
+        // Screen visit.
+        } else {
+            DATE_FROM.setDate(DATE_TO.getDate() - study.days[evt_index]);
+            DATE_30.setDate(DATE_TO.getDate() - 30);
+            DATE_90.setDate(DATE_TO.getDate() - 90);
         }
-        
-        $("#login-study").change(function () {
-            let val = $(this).val();
-            let selector = $('#login-redcap-event');
-  
-            selector.empty();
 
-            STUDIES.filter((x) => x.id == val)[0].redcap_events.forEach((event)=>{
-                selector.append(`<option>${event}</option>`);
-            });
-           
-        }).trigger('change');
+        let days = dayjs(DATE_TO).diff(DATE_FROM, 'day');
+        CAL.setOption('validRange', { start: DATE_FROM, end: DATE_TO });
+        $('#days').text(days);
+        $('#substance-list-days').text(days);
+        $('#date-from').text(DATE_FROM.toDateString());
+        $('#date-to').text(DATE_TO.toDateString());
+            $('#substance-list-since').text(`Since ${DATE_FROM.toDateString()}`);
     });
 
     // Load list of substances.
@@ -201,6 +189,27 @@ $(document).ready(function () {
     setInterval(function () {
         $('#time').text(((new Date()).toTimeString()));
     }, 1000);
+
+    // Set login dialog event handlers.
+    $('#close-login').click(function () {
+        let dob = $('#login-dob')[0].value;
+        let username = $('#login-username')[0].value;
+
+        if (!dob || !username)
+            return;
+
+        $.post('auth.php', {
+            pid: GET.get('pid'),
+            record: GET.get('record'),
+            dob,
+            username
+        }, function () {
+            $('#modal-login').removeClass('is-active');
+        }).fail(function (data) {
+            $('#login-error-message').text(data.responseText);
+            $('#login-error').removeClass('is-hidden');
+        });
+    });
 
     // Set substance-list event handlers.
     $('#close-substance-list').click(function () {
@@ -370,7 +379,7 @@ $(document).ready(function () {
 
         // Prep a downloadable JSON.
         let data = JSON.stringify({
-            studyid: POST.participant,
+            studyid: SECONDARY_ID,
             from: DATE_FROM,
             to: DATE_TO,
             substances: SELECTED_SUBS,
@@ -379,7 +388,7 @@ $(document).ready(function () {
         let file = new Blob([data], {type: 'text/json'});
         let link = $('#summary-download')[0];
         link.href = URL.createObjectURL(file);
-        link.download = `${POST.participant} ${(new Date()).toISOString()}.json`;
+        link.download = `${SECONDARY_ID} ${(new Date()).toISOString()}.json`;
         $('#summary-summary').text(data);
 
         let substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');

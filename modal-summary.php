@@ -2,7 +2,7 @@
 <div id="modal-summary" class="modal">
   <div class="modal-background"></div>
   <form id="form-summary">
-  <div class="modal-card">
+  <div class="modal-card" style="width: 80vw;">
 
     <header class="modal-card-head">
       <p class="modal-card-title">Timeline Summary</p>
@@ -10,6 +10,7 @@
 
     <section class="modal-card-body">
       <div class="content">
+	<p><a id="summary-download">Click here to download the raw data.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
         <pre id="summary-summary"></pre>
         <table class="table">
           <thead>

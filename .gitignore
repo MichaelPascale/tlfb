@@ -3,4 +3,4 @@ vendor/
 composer.lock
 substances.json
 studies.json
-.env
+*.ini

@@ -1,80 +1,75 @@
 <!-- Begin Session Login Modal Dialogue -->
-<div id="modal-login" class="modal <?php if (!$loggedIn) echo "is-active" ?>">
+<div id="modal-login" class="modal is-active">
   <div class="modal-background"></div>
-  <form method="post">
     <div class="modal-card">
 
       <header class="modal-card-head">
-        <p class="modal-card-title">Begin Session</p>
+        <p class="modal-card-title">Begin Timeline-Followback</p>
       </header>
 
       <section class="modal-card-body">
         <div class="content">
-          <article class="message is-danger <?php if (!$failedLogin) echo 'is-hidden'?>">
+          <article id="login-error" class="message is-danger <?php if (!$failed) echo 'is-hidden'?>">
             <div class="message-body">
-              <p>Failed to verify participant against information in REDCap. Please try again.</p>
-            </div>
-          </article>
-          <article class="message is-danger <?php if (!$visitNotStarted) echo 'is-hidden'?>">
-            <div class="message-body">
-              <p>A start-of-visit form has not been filled or is marked as a no-show for the selected event. Please check the database and try again.</p>
-            </div>
-          </article>
-          <article class="message is-danger <?php if (!$recordExists) echo 'is-hidden'?>">
-            <div class="message-body">
-              <p>A record already exists in the REDCap database for the selected event. Please check the database and try again.</p>
+              <p id="login-error-message"><?php echo $failed_reason?></p>
             </div>
           </article>
 
-          <p>To begin the session, please confirm and authenticate with the following information.</p>
+          <p>To begin the session, please confirm the following information.</p>
 
-          <div class="field">
-            <label class="label">Study</label>
-            <div class="control">
-              <div class="select">
-                <select id="login-study" name="study" required>
-                  <?php
-                    foreach($studies as $s) echo "<option value=\"$s->id\">$s->name</option>";
-                  ?>
-                </select>
+          <table class="table">
+            <thead>
+              <th>Study</th>
+              <th>Event</th>
+              <th>Participant ID</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td><?php if ($pid) echo $studies->$pid->name ?></td>
+                <td><?php if ($event_info) echo $event_info->event_name ?></td>
+                <td><?php if ($record_secondary_id) echo $record_secondary_id ?></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="mt-5">Verify the participant's date of birth and sign off with your credentials.
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Pt DOB</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="input" id="login-dob" type="date" required <?php if ($failed) echo 'disabled'?>>
+                </div>
+                <p class="help">Participant's date of birth.</p>
               </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="label">Event</label>
-            <div class="control">
-              <div class="select">
-                <select id="login-redcap-event" name="event" required>
-
-                </select>
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Staff</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="input" id="login-username" type="text" placeholder="MGB Username" required <?php if ($failed) echo 'disabled'?>>
+                </div>
+                <p class="help">Username of the administering research staff.</p>
               </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="label">Participant ID</label>
-            <div class="control">
-              <input class="input" id="login-participant" type="text" placeholder="MM_XXX" name="participant" required>
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="label">Date of Birth</label>
-            <div class="control">
-              <input class="input" id="login-dob" type="date" name="dob" required>
-            </div>
-          </div>
-
-          <p>Do not reload this tab or close your browser window during the session or changes could be lost. Close any unecessary tabs before starting the session.</p>
-
+          <p class="mt-5">Before starting the session, close any uneccessary tabs. Do not reload or close your browser during the session. Data will not be saved until the final submit.</p>
+          <p class="mt-5">Click "Start" once you have verified that the above information is correct.</p>
         </div>
       </section>
       
       <footer class="modal-card-foot">
-        <button class="button is-success is-fullwidth" type="submit">Start</button>
+        <button id="close-login" class="button is-link is-fullwidth" <?php if ($failed) echo 'disabled'?>>Start</button>
       </footer>
 
     </div>
-  </form>
 </div>

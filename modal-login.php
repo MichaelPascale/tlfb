@@ -4,7 +4,7 @@
     <div class="modal-card">
 
       <header class="modal-card-head">
-        <p class="modal-card-title">Begin Timeline-Followback</p>
+        <p class="modal-card-title">Begin Timeline Follow-Back</p>
       </header>
 
       <section class="modal-card-body">
@@ -25,7 +25,7 @@
             </thead>
             <tbody>
               <tr>
-                <td><?php if ($pid) echo $studies->$pid->name ?></td>
+                <td><?php if ($pid) echo $config[$pid]['name'] ?></td>
                 <td><?php if ($event_info) echo $event_info->event_name ?></td>
                 <td><?php if ($record_secondary_id) echo $record_secondary_id ?></td>
               </tr>
@@ -55,7 +55,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="login-username" type="text" placeholder="MGB Username" required <?php if ($failed) echo 'disabled'?>>
+                  <input class="input" id="login-username" type="text" placeholder="REDCap Username" required <?php if ($failed) echo 'disabled'?>>
                 </div>
                 <p class="help">Username of the administering research staff.</p>
               </div>

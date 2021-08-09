@@ -1,13 +1,12 @@
 // Define Globals
 // EVENT_NAME, SECONDARY_ID, LAST_VISIT defined in index.php.
-const GET = new URLSearchParams(window.location.search);
+const PARAMS = new URLSearchParams(window.location.search);
 var MODE = '';                  // Event-adding mode (substance event or key date).
 var CAL = null;                 // The FullCalendar object.
 var CUR_EVT = '';               // The calendar date currently being edited.
 var SUBSTANCES = null;          // List of substances.
 var SUBSTANCES_BY_CAT = null;   // List of substances by category.
 var SUBSTANCE_CAT = null;       // List of substance categories.
-var STUDES = null;              // List of studies.
 var DATE_FROM = new Date();     // TLFB start date.
 var DATE_TO = new Date();       // TLFB end date.
 var DATE_30 = new Date();       // 30 days ago.
@@ -132,32 +131,24 @@ $(document).ready(function () {
     });
     CAL.render();
 
-     // Load list of studies.
-     $.getJSON('studies.json', function (data) {
-        STUDIES = data;
+    // Followup visits.
+    if (LAST_VISIT) {
+        DATE_FROM = dayjs(LAST_VISIT.substring(0, 10), 'YYYY-MM-DD').toDate();
 
-        let study = STUDIES[GET.get('pid')];
-        let evt_index = study.redcap_events.indexOf(GET.get('event'));
+    // Screen visit.
+    } else {
+        DATE_FROM.setDate(DATE_TO.getDate() - DAYS);
+        DATE_30.setDate(DATE_TO.getDate() - 30);
+        DATE_90.setDate(DATE_TO.getDate() - 90);
+    }
 
-        // Followup visits.
-        if (evt_index > 0) {
-            DATE_FROM = dayjs(LAST_VISIT.substring(0, 10), 'YYYY-MM-DD').toDate();
-
-        // Screen visit.
-        } else {
-            DATE_FROM.setDate(DATE_TO.getDate() - study.days[evt_index]);
-            DATE_30.setDate(DATE_TO.getDate() - 30);
-            DATE_90.setDate(DATE_TO.getDate() - 90);
-        }
-
-        let days = dayjs(DATE_TO).diff(DATE_FROM, 'day');
-        CAL.setOption('validRange', { start: DATE_FROM, end: DATE_TO });
-        $('#days').text(days);
-        $('#substance-list-days').text(days);
-        $('#date-from').text(DATE_FROM.toDateString());
-        $('#date-to').text(DATE_TO.toDateString());
-            $('#substance-list-since').text(`Since ${DATE_FROM.toDateString()}`);
-    });
+    let days = dayjs(DATE_TO).diff(DATE_FROM, 'day');
+    CAL.setOption('validRange', { start: DATE_FROM, end: DATE_TO });
+    $('#days').text(days);
+    $('#substance-list-days').text(days);
+    $('#date-from').text(DATE_FROM.toDateString());
+    $('#date-to').text(DATE_TO.toDateString());
+    $('#substance-list-since').text(`Since ${DATE_FROM.toDateString()}`);
 
     // Load list of substances.
     $.getJSON('substances.json', function (data) {
@@ -199,8 +190,8 @@ $(document).ready(function () {
             return;
 
         $.post('auth.php', {
-            pid: GET.get('pid'),
-            record: GET.get('record'),
+            pid: PARAMS.get('pid'),
+            record: PARAMS.get('record'),
             dob,
             username
         }, function () {
@@ -379,7 +370,8 @@ $(document).ready(function () {
 
         // Prep a downloadable JSON.
         let data = JSON.stringify({
-            studyid: SECONDARY_ID,
+            record: PARAMS.get('record'),
+            id: SECONDARY_ID,
             from: DATE_FROM,
             to: DATE_TO,
             substances: SELECTED_SUBS,
@@ -391,63 +383,43 @@ $(document).ready(function () {
         link.download = `${SECONDARY_ID} ${(new Date()).toISOString()}.json`;
         $('#summary-summary').text(data);
 
-        let substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');
-        let substance_events_30 = substance_events.filter(x=>x.start > DATE_30);
-        let substance_events_90 = substance_events.filter(x=>x.start > DATE_90);
+        const substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');
+        const weeks = DAYS / 7;
 
         // Total number of days each substance was used.
-        $('#tlfb_etoh_total_days_90').text(calc_days_used(substance_events_90, 'etoh'));
-        $('#tlfb_etoh_total_days_30').text(calc_days_used(substance_events_30, 'etoh'));
-        $('#tlfb_mj_total_days_90').text(calc_days_used(substance_events_90, 'mj'));
-        $('#tlfb_mj_total_days_30').text(calc_days_used(substance_events_30, 'mj'));
-        $('#tlfb_nic_total_days_90').text(calc_days_used(substance_events_90, 'nic'));
-        $('#tlfb_nic_total_days_30').text(calc_days_used(substance_events_30, 'nic'));
-        $('#tlfb_stim_total_days_90').text(calc_days_used(substance_events_90, 'stim'));
-        $('#tlfb_stim_total_days_30').text(calc_days_used(substance_events_30, 'stim'));
-        $('#tlfb_coc_total_days_90').text(calc_days_used(substance_events_90, 'coc'));
-        $('#tlfb_coc_total_days_30').text(calc_days_used(substance_events_30, 'coc'));
-        $('#tlfb_opi_total_days_90').text(calc_days_used(substance_events_90, 'opi'));
-        $('#tlfb_opi_total_days_30').text(calc_days_used(substance_events_30, 'opi'));
-        $('#tlfb_hall_total_days_90').text(calc_days_used(substance_events_90, 'hall'));
-        $('#tlfb_hall_total_days_30').text(calc_days_used(substance_events_30, 'hall'));
-        $('#tlfb_diss_total_days_90').text(calc_days_used(substance_events_90, 'diss'));
-        $('#tlfb_diss_total_days_30').text(calc_days_used(substance_events_30, 'diss'));
-        $('#tlfb_inh_total_days_90').text(calc_days_used(substance_events_90, 'inh'));
-        $('#tlfb_inh_total_days_30').text(calc_days_used(substance_events_30, 'inh'));
-        $('#tlfb_sdh_total_days_90').text(calc_days_used(substance_events_90, 'sdh'));
-        $('#tlfb_sdh_total_days_30').text(calc_days_used(substance_events_30, 'sdh'));
-        $('#tlfb_misc_total_days_90').text(calc_days_used(substance_events_90, 'misc'));
-        $('#tlfb_misc_total_days_30').text(calc_days_used(substance_events_30, 'misc'));
+        const days_used_etoh = calc_days_used(substance_events, 'etoh');
+        const days_used_mj = calc_days_used(substance_events, 'mj');
+        const days_used_nic = calc_days_used(substance_events, 'nic');
+
+        $('#tlfb_etoh_total_days').text(days_used_etoh);
+        $('#tlfb_mj_total_days').text(days_used_mj);
+        $('#tlfb_nic_total_days').text(days_used_nic);
 
         // For alcohol only, report the total number of drinks.
-        $('#tlfb_etoh_total_units_90').text(calc_total_units(substance_events_90, 'Alcohol', 'standard drinks'));
-        $('#tlfb_etoh_total_units_30').text(calc_total_units(substance_events_30, 'Alcohol', 'standard drinks'));
+        const total_units_etoh = calc_total_units(substance_events, 'Alcohol', 'standard drinks');
+        $('#tlfb_etoh_total_units').text(total_units_etoh);
 
         // For all other substances, report the total number of occasions.
-        $('#tlfb_mj_total_units_90').text(calc_total_occasions(substance_events_90, 'mj'))
-        $('#tlfb_mj_total_units_30').text(calc_total_occasions(substance_events_30, 'mj'))
-        $('#tlfb_nic_total_units_90').text(calc_total_occasions(substance_events_90, 'nic'))
-        $('#tlfb_nic_total_units_30').text(calc_total_occasions(substance_events_30, 'nic'))
-        $('#tlfb_stim_total_units_90').text(calc_total_occasions(substance_events_90, 'stim'))
-        $('#tlfb_stim_total_units_30').text(calc_total_occasions(substance_events_30, 'stim'))
-        $('#tlfb_coc_total_units_90').text(calc_total_occasions(substance_events_90, 'coc'))
-        $('#tlfb_coc_total_units_30').text(calc_total_occasions(substance_events_30, 'coc'))
-        $('#tlfb_opi_total_units_90').text(calc_total_occasions(substance_events_90, 'opi'))
-        $('#tlfb_opi_total_units_30').text(calc_total_occasions(substance_events_30, 'opi'))
-        $('#tlfb_hall_total_units_90').text(calc_total_occasions(substance_events_90, 'hall'))
-        $('#tlfb_hall_total_units_30').text(calc_total_occasions(substance_events_30, 'hall'))
-        $('#tlfb_diss_total_units_90').text(calc_total_occasions(substance_events_90, 'diss'))
-        $('#tlfb_diss_total_units_30').text(calc_total_occasions(substance_events_30, 'diss'))
-        $('#tlfb_inh_total_units_90').text(calc_total_occasions(substance_events_90, 'inh'))
-        $('#tlfb_inh_total_units_30').text(calc_total_occasions(substance_events_30, 'inh'))
-        $('#tlfb_sdh_total_units_90').text(calc_total_occasions(substance_events_90, 'sdh'))
-        $('#tlfb_sdh_total_units_30').text(calc_total_occasions(substance_events_30, 'sdh'))
-        $('#tlfb_misc_total_units_90').text(calc_total_occasions(substance_events_90, 'misc'))
-        $('#tlfb_misc_total_units_30').text(calc_total_occasions(substance_events_30, 'misc'))
+        const total_units_mj = calc_total_occasions(substance_events, 'mj');
+        const total_units_nic = calc_total_occasions(substance_events, 'nic');
+        $('#tlfb_mj_total_units').text(total_units_mj);
+        $('#tlfb_nic_total_units').text(total_units_nic);
 
+        // Average occasions per use day.
+        $('#tlfb_etoh_avg_unitsday').text(total_units_etoh/days_used_etoh);
+        $('#tlfb_mj_avg_unitsday').text(total_units_mj/days_used_mj);
+        $('#tlfb_nic_avg_unitsday').text(total_units_nic/days_used_nic);
 
+        // Average occasions per week.
+        $('#tlfb_etoh_avg_units').text(days_used_etoh/weeks);
+        $('#tlfb_mj_avg_units').text(days_used_mj/weeks);
+        $('#tlfb_nic_avg_units').text(days_used_nic/weeks);
 
-
+        // Average days per week.
+        $('#tlfb_etoh_avg_days').text((days_used_etoh/DAYS)*7);
+        $('#tlfb_mj_avg_days').text((days_used_mj/DAYS)*7);
+        $('#tlfb_nic_avg_days').text((days_used_nic/DAYS)*7);
+        
 
         $('#modal-summary').addClass('is-active');
     });

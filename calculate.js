@@ -1,18 +1,25 @@
 /*
     calculate.js
-    Calculate various metrics on the timeline-followback data.
+    Calculate various metrics on the timeline follow-back data.
 */
 
-function calc_days_used(eventlist, category) {
+function calc_use_days(eventlist, category) {
 
-    let days_used = new Set();
+    let use_days = new Set();
 
     for (let event of eventlist) {
         if (event.extendedProps.category == category)
-            days_used.add(event.start.toDateString());
+            use_days.add(event.start.toISOString().substring(0,10));
     }
 
-    return days_used.size;
+    return Array.from(use_days);
+}
+
+function calc_days_used(eventlist, category) {
+
+    let use_days = calc_use_days(eventlist, category);
+
+    return use_days.length;
 }
 
 function calc_total_occasions(eventlist, category) {

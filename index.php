@@ -6,7 +6,6 @@ require_once 'php/errors.php';
 require_once 'php/redcap.php';
 
 $config = parse_ini_file('config.ini', true);
-$studies = json_decode(file_get_contents('studies.json'));
 
 $pid = null;
 $event = null;
@@ -19,7 +18,6 @@ $warning_reason = '';
 
 $pt = null;
 $event_info = null;
-// $visit_type = null;
 $record_secondary_id = null;
 
 $date_last_visit = null;
@@ -35,45 +33,45 @@ try {
   $record = $_GET['record'];
 
   // Obtain information from REDCap.
-  $redcap = new REDCapAPI($config[$pid]['redcap_uri'], $config[$pid]['redcap_key']);
+  $redcap = new REDCapAPI($config[$pid]['redcap']['uri'], $config[$pid]['redcap']['key']);
 
-  $events = $redcap->get_events();
+  $project_info = $redcap->request('project');
+  $events = $redcap->request('event');
   $event_info = find_by_property($events, 'unique_event_name', $event);
+  $tlfb_events = $redcap->get_instrument_event_map($config[$pid]['redcap']['arm'], $config[$pid]['forms']['tlfb']);
 
   $pt = $redcap->get_patient(
     $record,
-    $config[$pid]['redcap_event_screen'],
-    [$config[$pid]['redcap_secondary_id']]
+    $config[$pid]['events']['screen'],
+    [$config[$pid]['fields']['secondary_id']]
   );
 
-  $record_secondary_id = $pt->{$config[$pid]['redcap_secondary_id']};
+  $record_secondary_id = $pt->{$config[$pid]['fields']['secondary_id']};
   if (!$record_secondary_id)
     throw new Exception('A secondary ID is not available for this record. Please check that the participant has been assigned a study ID.');
 
-  $study = $studies->$pid;
-  $evt_index = array_search($event, $study->redcap_events);
-  $visit_type = $evt_index == 0 ? 'screen' : 'followup';
+  $evt_index = array_search($event, $tlfb_events);
 
-  if (!$redcap->verify_form_complete($record, $event, $study->forms->startofvisit, "[{$study->variables->ptshowed}]='1'"))
+  if (!$redcap->verify_form_complete($record, $event, $config[$pid]['forms']['visit'], "[{$config[$pid]['fields']['show']}]='1'"))
     throw new Exception('A start-of-visit form has not been filled or is marked as a no-show for the selected event. Please check the database and try again.');
 
-  if ($redcap->verify_form_complete($record, $event, $study->forms->$visit_type, ''))
+  if ($redcap->verify_form_complete($record, $event, $config[$pid]['forms']['tlfb'], ''))
     throw new Exception('A timeline record already exists in REDCap for the selected event. Please check the database and try again.');
 
   
-  if ($visit_type == 'followup') {
-    $visitstart = $redcap->request('record', [
+  if ($evt_index > 0) {
+    $lastvisit = $redcap->request('record', [
       'records' => [$record],
-      'events' => [$study->redcap_events[$evt_index - 1]],
-      'fields' => [$study->variables->starttime]
+      'events' => [$tlfb_events[$evt_index - 1]],
+      'fields' => [$config[$pid]['fields']['start']]
     ]);
     
     // Check that the previous event has a record. Pass the date of the last visit to the client.
-    if (count($visitstart) > 0  && $visitstart[0]->{$study->variables->starttime}) {
-      $date_last_visit = $visitstart[0]->{$study->variables->starttime};
+    if (count($lastvisit) > 0  && $lastvisit[0]->{$config[$pid]['fields']['start']}) {
+      $date_last_visit = $lastvisit[0]->{$config[$pid]['fields']['start']};
     } else {
       $warning = true;
-      $warning_reason .= 'The previous event\'s start-of-visit form is incomplete for this participant. A calendar of 30 days will be used instead of days since the last visit.';
+      $warning_reason .= "The previous event's visit record form is incomplete for this participant. A default calendar of {$config[$pid]['timeline']['days']} days will be used.";
     }
   }
 
@@ -89,7 +87,7 @@ try {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>CAM Timeline Followback</title>
+    <title>CAM Timeline Follow-Back</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="lib/fullcalendar-5.8.0.css"/>
     <link rel="stylesheet" href="lib/bulma-0.9.2.min.css"/>
@@ -99,6 +97,7 @@ try {
     <script>const EVENT_NAME = <?php echo "'$event_info->event_name';"?></script>
     <script>const SECONDARY_ID = <?php echo "'$record_secondary_id';"?></script>
     <script>const LAST_VISIT = <?php echo "'$date_last_visit';"?></script>
+    <script>const DAYS = <?php echo "'{$config[$pid]['timeline']['days']}';"?></script>
     <script src="calculate.js"></script>
     <script src="index.js"></script>
   </head>
@@ -122,7 +121,6 @@ try {
             <p>
               <span id="date-from"></span>&nbsp;to&nbsp;
               <span id="date-to"></span>&nbsp;
-              (<?php if (!$failed) echo $visit_type ?>)
             </p>
           </div>
           <div class="level-item">
@@ -130,7 +128,7 @@ try {
           </div>
         </div>
         <div class="level-right">
-          <button class="level-item button is-info" id="open-summary">View Summary</button>
+          <span id="time"></span>
         </div>
       </div>
 
@@ -149,7 +147,7 @@ try {
         </div>
 
         <div class="level-right">
-          <span id="time"></span>
+          <button class="level-item button is-info" id="open-summary">View Summary</button>
         </div>
       </div>
 

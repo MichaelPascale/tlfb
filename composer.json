@@ -1,6 +1,6 @@
 {
-    "name": "cam/tlfb",
-    "description": "Timeline-followback application for use across CAM.",
+    "name": "mpascale/tlfb",
+    "description": "Timeline follow-back application for use across the Center for Addiction Medicine.",
     "license": "MIT",
     "authors": [
         {

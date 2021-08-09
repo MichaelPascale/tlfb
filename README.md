@@ -1,4 +1,17 @@
-# Multisubstance Timeline Followback
+# Multisubstance Online Timeline Follow-Back
+
+The timeline follow-back is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by Linda and Mark Sobell.
+
+## Prerequisites
+
+Download the following libraries. Rename accordingly and place the files under `lib/`.
+
+
+- `bulma-0.9.2.min.css`
+- `fullcalendar-5.8.0.css`
+- `fullcalendar-5.8.0.js`
+- `jquery-3.6.0.min.js`
+- `dayjs-1.10.6.min.js`
 
 
 ## Configuration
@@ -8,49 +21,34 @@ This project makes use of [composer](https://getcomposer.org/) to manage PHP dep
 Create a `config.ini` in the top level directory with the following contents for each project.
 ```ini
 [40165] # REDCAP Project ID
-redcap_uri='https://redcap.example.org/redcap/api/'
-redcap_key='Y3L1AZNBLS4TBUQLLFR5I5632M1HP5DN'
-redcap_event_screen='screening_visit_arm_1'
-redcap_secondary_id='studyid'
+redcap[uri]='https://redcap.example.org/redcap/api/'
+redcap[key]='Y3L1AZNBLS4TBUQLLFR5I5632M1HP5DN'
+redcap[arm]=1
+
+# The event in which to look for subject-level data.
+events[screen]='screening_visit_arm_1' 
+
+# Record of the study visit.
+forms[visit]='visitstart'   
+# Timeline follow-back instrument.
+forms[tlfb]='tlfb_scoring_module'
+
+# Study ID field.
+fields[secondary_id]='visitstart_studyid'
+# Date-of-Birth field.
+fields[dob]='dob'
+# Date of the study visit.
+fields[start]='visitstart_starttime'
+# Whether the participant showed up for the visit.
+fields[show]='visitstart_ptshowed'
+
+# The default number of days to look back.
+timeline[days]=90
 ```
 
-Also present should be a `studies.json` and `substances.json`.
+Also present should be a `substances.json`.
 
-## `studies.json`
-
-```jsonc
-{
-    "40165": {
-        "name": "Study Name (to Display)",
-       // List of events at which the form will be administered. 
-        "redcap_events": [
-            "visit1_baseline_arm_1",
-            "visit2_2wk_arm_1",
-            "visit3_4wk_arm_1",
-            "visit4_6wk_arm_1",
-            "visit5_8wk_arm_1",
-        ],
-        // Default number of days back to look at each event.
-        "days": [90, 30, 30, 30, 30],
-        "forms": {
-            // Visit start instrument.
-            "startofvisit": "visitstart",
-            // Instrument to which screen scores will be saved.
-            "screen": "tlfb_screen_scoring",
-            // Instrument to which followup scores will be saved.
-            "followup": "tlfb_followup_scoring"
-        },
-        "variables": {
-            // Visit date and time.
-            "starttime": "visitstart_starttime",
-            // Did the patient show up to the visit?
-            "ptshowed": "visitstart_ptshow"
-        }
-    }
-}
-```
-
-## `substances.json`
+### `substances.json`
 
 ```jsonc
 {
@@ -78,10 +76,24 @@ Also present should be a `studies.json` and `substances.json`.
 ```
 ## Credits
 
-Adapted from the timeline-followback application developed for the [Adolescent Brain Cognitive Development](https://github.com/ABCD-STUDY/timeline-followback) study. 
+Sobell L.C., Sobell M.B. (1992) Timeline Follow-Back.
 
+Adapted from the timeline follow-back application developed for the [Adolescent Brain Cognitive Development](https://github.com/ABCD-STUDY/timeline-followback) study. 
 
 Made possible with [FullCalendar](https://fullcalendar.io/), [jQuery](https://jquery.com/), [Guzzle](https://docs.guzzlephp.org/en/stable/), [Day.js](https://day.js.org/), [Bulma](https://bulma.io/), and [Material Design Icons](https://github.com/google/material-design-icons).
 
+## References
+
+Lisdahl, K. M., Sher, K. J., Conway, K. P., Gonzalez, R., Feldstein Ewing, S. W., Nixon, S. J., Tapert, S., Bartsch, H., Goldstein, R. Z., & Heitzeg, M. (2018). _Adolescent brain cognitive development (ABCD) study: Overview of substance use assessment methods_. Developmental Cognitive Neuroscience, 32, 80–96. https://doi.org/10.1016/j.dcn.2018.02.007
+
+Nova Southeastern University. (n.d.). _Timeline Followback Forms and Related Materials_. NSU. Retrieved August 9, 2021, from https://www.nova.edu/gsc/forms/timeline-followback-forms.html
+
+Robinson, S. M., Sobell, L. C., Sobell, M. B., & Leo, G. I. (2014). _Reliability of the Timeline Followback for cocaine, cannabis, and cigarette use_. Psychology of Addictive Behaviors, 28(1), 154–162. https://doi.org/10.1037/a0030992
+
+Sobell, L. C., Brown, J., Leo, G. I., & Sobell, M. B. (1996). _The reliability of the Alcohol Timeline Followback when administered by telephone and by computer_. Drug and Alcohol Dependence, 42(1), 49–54. https://doi.org/10.1016/0376-8716(96)01263-X
+
+Sobell, L. C., & Sobell, M. B. (1992). _Timeline Follow-Back_. In R. Z. Litten & J. P. Allen (Eds.), Measuring Alcohol Consumption: Psychosocial and Biochemical Methods (pp. 41–72). Humana Press. https://doi.org/10.1007/978-1-4612-0357-5_3
+
+
 ---
-Copyright (c) 2021, Michael Pascale. All rights reserved.
+Source code is copyright (c) 2021, Michael Pascale and distributed under the MIT License.

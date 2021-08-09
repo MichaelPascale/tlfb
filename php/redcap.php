@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 
 /**
  * Class to handle interactions with the REDCap API, including utility functions
- * specific to the timeline-followback application.
+ * specific to the timeline follow-back application.
  */
 class REDCapAPI {
     private $client;
@@ -44,17 +44,28 @@ class REDCapAPI {
     }
 
     /**
-     * Fetch the list of events.
+     * Fetch the list of events in which an instrument is administered.
      * 
-     * @param string $record The record ID of the participant.
+     * @param string $arm The study arm to return.
+     * @param string $instrument The insntrument to fetch events for.
      */
-    function get_events() {
-        $body = $this->request('event');
+    function get_instrument_event_map($arm, $instrument) {
+        $body = $this->request('formEventMapping', [
+            'arms' => [$arm]
+        ]);
     
         if (count($body) < 1)
             return false;
         
-        return $body;
+        $matching = array_filter($body, function ($item) use ($instrument) {
+            return $item->form == $instrument;
+        });
+
+        $matching = array_map(function($item) {
+            return $item->unique_event_name;
+        }, $matching);
+
+        return array_values($matching);
     }
 
     /**
@@ -79,16 +90,17 @@ class REDCapAPI {
     }
     
     /**
-     * Verify that a participant exists in the REDCap database.
+     * Verify that a value matches that recorded in the database for a patient.
      * 
      * @param string $record The record ID of the participant.
-     * @param string $dob The participant's date of birth in YYYY-MM-DD format.
+     * @param string $field The name of the field to check.
+     * @param string $value The value to check against.
      */
-    function verify_patient($record, $dob) {
+    function verify_field($record, $field, $value) {
         $body = $this->request('record', [
             'records' => [$record],
-            'fields' => ['dob'],
-            'filterLogic' => '[dob]=\''.$dob.'\''
+            'fields' => [$field],
+            'filterLogic' => "[$field]='$dob'"
         ]);
     
         if (count($body) > 0)

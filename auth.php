@@ -21,7 +21,7 @@ try {
     
     $record = $_POST['record'];
     $dob = $_POST['dob'];
-    if(!$redcap->verify_field($record, $config[$pid]['fields']['dob'], $dob))
+    if(!$redcap->verify_field($record, $config[$pid]['events']['screen'], $config[$pid]['fields']['dob'], $dob))
         throw new Exception('The patient could not be verified.');
 
     echo 'OK.';

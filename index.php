@@ -52,26 +52,26 @@ try {
 
   $evt_index = array_search($event, $tlfb_events);
 
-  if (!$redcap->verify_form_complete($record, $event, $config[$pid]['forms']['visit'], "[{$config[$pid]['fields']['show']}]='1'"))
-    throw new Exception('A start-of-visit form has not been filled or is marked as a no-show for the selected event. Please check the database and try again.');
+  if (!$redcap->verify_field($record, $event, $config[$pid]['fields']['show'], 1))
+    throw new Exception('A start-of-visit form has not yet been filled or is marked as a no-show for the selected event. Please check the database and try again.');
 
-  if ($redcap->verify_form_complete($record, $event, $config[$pid]['forms']['tlfb'], ''))
+  if ($redcap->verify_form_complete($record, $event, $config[$pid]['forms']['tlfb']))
     throw new Exception('A timeline record already exists in REDCap for the selected event. Please check the database and try again.');
 
   
   if ($evt_index > 0) {
-    $lastvisit = $redcap->request('record', [
+    $last_visit = $redcap->request('record', [
       'records' => [$record],
       'events' => [$tlfb_events[$evt_index - 1]],
-      'fields' => [$config[$pid]['fields']['start']]
+      'fields' => [$config[$pid]['fields']['tlfb_date']]
     ]);
     
     // Check that the previous event has a record. Pass the date of the last visit to the client.
-    if (count($lastvisit) > 0  && $lastvisit[0]->{$config[$pid]['fields']['start']}) {
-      $date_last_visit = $lastvisit[0]->{$config[$pid]['fields']['start']};
+    if (count($last_visit) > 0  && $last_visit[0]->{$config[$pid]['fields']['tlfb_date']}) {
+      $date_last_visit = substr($last_visit[0]->{$config[$pid]['fields']['tlfb_date']}, 0, 10);
     } else {
       $warning = true;
-      $warning_reason .= "The previous event's visit record form is incomplete for this participant. A default calendar of {$config[$pid]['timeline']['days']} days will be used.";
+      $warning_reason .= "There is no previous timeline record. A default calendar of {$config[$pid]['timeline']['days']} days will be used.";
     }
   }
 
@@ -87,11 +87,13 @@ try {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>CAM Timeline Follow-Back</title>
+    <title>Timeline Follow-Back</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="lib/fullcalendar-5.8.0.css"/>
     <link rel="stylesheet" href="lib/bulma-0.9.2.min.css"/>
+    <link rel="stylesheet" href="css/loading.css"/>
     <script src="lib/dayjs-1.10.6.min.js"></script>
+    <script src="lib/dayjs-duration-1.10.6.min.js"></script>
     <script src="lib/fullcalendar-5.8.0.js"></script>
     <script src="lib/jquery-3.6.0.min.js"></script>
     <script>const EVENT_NAME = <?php echo "'$event_info->event_name';"?></script>
@@ -147,7 +149,7 @@ try {
         </div>
 
         <div class="level-right">
-          <button class="level-item button is-info" id="open-summary">View Summary</button>
+          <button class="level-item button is-link" id="open-summary">View Summary</button>
         </div>
       </div>
 
@@ -161,6 +163,11 @@ try {
     <?php include 'modal-substance-list.php'; ?>
     <?php include 'modal-substance-event.php'; ?>
     <?php include 'modal-key-event.php'; ?>
+
+    <div id="loading" class="modal">
+      <div class="modal-background"></div> 
+      <div class="loading-spinner"></div>
+    </div>
 
     <footer class="footer">
       <div class="content has-text-centered">

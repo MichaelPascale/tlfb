@@ -1,17 +1,22 @@
 <!-- Timeline Summary Modal Dialogue -->
 <div id="modal-summary" class="modal">
   <div class="modal-background"></div>
-  <form id="form-summary">
   <div class="modal-card" style="width: 80vw;">
 
     <header class="modal-card-head">
       <p class="modal-card-title">Timeline Summary</p>
     </header>
 
-    <section class="modal-card-body">
+    <section id="summary" class="modal-card-body">
       <div class="content">
-	<p><a id="summary-download">Click here to download the raw data.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
-        <pre id="summary-summary"></pre>
+        <p><a id="summary-download">Click here to download the raw data.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
+        
+        <article id="summary-error" class="message is-danger is-hidden">
+          <div class="message-body">
+            <p id="summary-error-message"></p>
+          </div>
+        </article>
+
         <table class="table">
           <thead>
             <tr>
@@ -43,15 +48,14 @@
           </tbody>
 
         </table>
-        <p><a id="summary-download">Download Raw Data</a></p>
+        <p class="has-text-centered my-4"><a id="summary-download">Download Raw Data</a></p>
       </div>
     </section>
 
     <footer class="modal-card-foot">
-      <button id="save-summary" class="button is-success is-fullwidth" type="submit">Save and Submit to REDCap</button>
+      <button id="save-summary" class="button is-link is-fullwidth">Save and Submit to REDCap</button>
     </footer>
 
   </div>
-  </form>
   <button id="close-summary" class="modal-close is-large" aria-label="close"></button>
 </div>

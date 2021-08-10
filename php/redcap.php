@@ -93,14 +93,16 @@ class REDCapAPI {
      * Verify that a value matches that recorded in the database for a patient.
      * 
      * @param string $record The record ID of the participant.
+     * @param string $event The event to check against.
      * @param string $field The name of the field to check.
      * @param string $value The value to check against.
      */
-    function verify_field($record, $field, $value) {
+    function verify_field($record, $event, $field, $value) {
         $body = $this->request('record', [
             'records' => [$record],
             'fields' => [$field],
-            'filterLogic' => "[$field]='$dob'"
+            'events' => [$event],
+            'filterLogic' => "[$field]='$value'"
         ]);
     
         if (count($body) > 0)
@@ -130,6 +132,26 @@ class REDCapAPI {
             return true;
     
         return false;
+    }
+
+    /**
+     * Import records to REDCap.
+     * 
+     * @param string $record The record ID of the participant.
+     * @param string $event The REDCap event to import data to.
+     * @param array $data  Data to import.
+     */
+    function import($record, $event, $data = []) {
+        $body = $this->request('record', [
+            'data' => json_encode([array_replace([
+                'record_id' => $record,
+                'redcap_event_name' => $event
+            ], $data)]),
+            'overwriteBehavior' => 'normal',
+            'dateFormat' => 'YMD'
+        ]);
+
+        return $body;
     }
 
 }

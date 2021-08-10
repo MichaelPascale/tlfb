@@ -12,6 +12,9 @@ Download the following libraries. Rename accordingly and place the files under `
 - `fullcalendar-5.8.0.js`
 - `jquery-3.6.0.min.js`
 - `dayjs-1.10.6.min.js`
+- `dayjs-duration-1.10.6.min.js` (plugin)
+
+A REDCap database must have scoring instrument to store the summarized results of the timeline follow-back. Upload `instrument.csv` to your database.
 
 
 ## Configuration

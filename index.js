@@ -117,6 +117,8 @@ function eventClick (ev){
 // When the document is loaded...
 $(document).ready(function () {
 
+    dayjs.extend(dayjs_plugin_duration);
+
     // Initialize the FullCalendar object.
     CAL = new FullCalendar.Calendar($("#calendar")[0], {
         initialView: "dayGridMonth",
@@ -183,23 +185,27 @@ $(document).ready(function () {
 
     // Set login dialog event handlers.
     $('#close-login').click(function () {
+        $('#loading').addClass('is-active');
         let dob = $('#login-dob')[0].value;
         let username = $('#login-username')[0].value;
 
-        if (!dob || !username)
-            return;
-
-        $.post('auth.php', {
-            pid: PARAMS.get('pid'),
-            record: PARAMS.get('record'),
-            dob,
-            username
-        }, function () {
-            $('#modal-login').removeClass('is-active');
-        }).fail(function (data) {
-            $('#login-error-message').text(data.responseText);
-            $('#login-error').removeClass('is-hidden');
-        });
+        if (dob && username) {
+            $.post('auth.php', {
+                pid: PARAMS.get('pid'),
+                record: PARAMS.get('record'),
+                dob,
+                username
+            }, function () {
+                $('#modal-login').removeClass('is-active');
+            }).fail(function (data) {
+                $('#login-error-message').text(data.responseText);
+                $('#login-error').removeClass('is-hidden');
+            }).always(function () {
+                $('#loading').removeClass('is-active');
+            });
+        } else {
+            $('#loading').removeClass('is-active');
+        }
     });
 
     // Set substance-list event handlers.
@@ -340,11 +346,6 @@ $(document).ready(function () {
         }
     });
 
-    // Set substance-event event handlers.
-    $('#close-summary').click(function () {
-        $('#modal-summary').removeClass('is-active');
-    });
-
     // Set button event handlers.
     $('#open-substance-list').click(function () {
         $('#modal-substance-list').addClass('is-active');
@@ -362,6 +363,11 @@ $(document).ready(function () {
         $('#mode-substance-event').removeClass('is-success').attr('disabled', false);
         CAL.setOption('selectable', true);
         MODE = 'key-event';
+    });
+
+    // Set summary screen event handlers.
+    $('#close-summary').click(function () {
+        $('#modal-summary').removeClass('is-active');
     });
 
     $('#open-summary').click(function () {
@@ -406,21 +412,53 @@ $(document).ready(function () {
         $('#tlfb_nic_total_units').text(total_units_nic);
 
         // Average occasions per use day.
-        $('#tlfb_etoh_avg_unitsday').text(total_units_etoh/days_used_etoh);
-        $('#tlfb_mj_avg_unitsday').text(total_units_mj/days_used_mj);
-        $('#tlfb_nic_avg_unitsday').text(total_units_nic/days_used_nic);
+        $('#tlfb_etoh_avg_unitsday').text((total_units_etoh/days_used_etoh).toFixed(3));
+        $('#tlfb_mj_avg_unitsday').text((total_units_mj/days_used_mj).toFixed(3));
+        $('#tlfb_nic_avg_unitsday').text((total_units_nic/days_used_nic).toFixed(3));
 
         // Average occasions per week.
-        $('#tlfb_etoh_avg_units').text(days_used_etoh/weeks);
-        $('#tlfb_mj_avg_units').text(days_used_mj/weeks);
-        $('#tlfb_nic_avg_units').text(days_used_nic/weeks);
+        $('#tlfb_etoh_avg_units').text((total_units_etoh/weeks).toFixed(3));
+        $('#tlfb_mj_avg_units').text((total_units_mj/weeks).toFixed(3));
+        $('#tlfb_nic_avg_units').text((total_units_nic/weeks).toFixed(3));
 
         // Average days per week.
-        $('#tlfb_etoh_avg_days').text((days_used_etoh/DAYS)*7);
-        $('#tlfb_mj_avg_days').text((days_used_mj/DAYS)*7);
-        $('#tlfb_nic_avg_days').text((days_used_nic/DAYS)*7);
-        
+        $('#tlfb_etoh_avg_days').text(((days_used_etoh/DAYS)*7).toFixed(3));
+        $('#tlfb_mj_avg_days').text(((days_used_mj/DAYS)*7).toFixed(3));
+        $('#tlfb_nic_avg_days').text(((days_used_nic/DAYS)*7).toFixed(3));
+
+        $('#tlfb_etoh_last_use').text(calc_days_since_last_use(substance_events, 'etoh', dayjs().startOf('day')));
+        $('#tlfb_mj_last_use').text(calc_days_since_last_use(substance_events, 'mj', dayjs().startOf('day')));
+        $('#tlfb_nic_last_use').text(calc_days_since_last_use(substance_events, 'nic', dayjs().startOf('day')));
 
         $('#modal-summary').addClass('is-active');
+    });
+
+    $('#save-summary').click(function () {
+        $('#loading').addClass('is-active');
+        
+        $.post('save.php', {
+            pid: PARAMS.get('pid'),
+            record: PARAMS.get('record'),
+            secondary: SECONDARY_ID
+        }, function () {
+            $('#modal-login').removeClass('is-active');
+        }).fail(function (data) {
+            $('#summary-error-message').text(data.responseText);
+            $('#summary-error').removeClass('is-hidden');
+
+            $('#summary').scrollTop(0);
+
+            (function flash (i) {
+                if (i > 0) {
+                    $('#summary').toggleClass('has-background-danger');
+                    setTimeout(flash, 50, i-1);
+                } else {
+                    $('#summary').removeClass('has-background-danger'); 
+                }
+            })(3);
+
+        }).always(function () {
+            $('#loading').removeClass('is-active');
+        });
     });
 });

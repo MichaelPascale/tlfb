@@ -48,3 +48,19 @@ function calc_total_units(eventlist, substance, units) {
 
     return total;
 }
+
+function calc_days_since_last_use(eventlist, category, date) {
+    let events = eventlist.filter(x=>x.extendedProps.category == category);
+    let use_days_str = calc_use_days(eventlist, category);
+
+    if (use_days_str.length < 1)
+        return NaN;
+
+    let last_day = use_days_str.reduce(function(acc, cur) {
+        let d = dayjs(cur, 'YYYY-MM-DD');
+        return (d > acc) ? d : acc;
+    }, dayjs(0));
+
+  
+    return dayjs.duration(dayjs().startOf('day').diff(last_day)).asDays();
+}

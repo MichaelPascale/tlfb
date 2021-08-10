@@ -22,12 +22,14 @@
               <th>Study</th>
               <th>Event</th>
               <th>Participant ID</th>
+              <th>Last Completion</th>
             </thead>
             <tbody>
               <tr>
                 <td><?php if ($pid) echo $config[$pid]['name'] ?></td>
                 <td><?php if ($event_info) echo $event_info->event_name ?></td>
                 <td><?php if ($record_secondary_id) echo $record_secondary_id ?></td>
+                <td><?php echo ($date_last_visit) ? $date_last_visit : 'N/A' ?></td>
               </tr>
             </tbody>
           </table>

@@ -1,0 +1,40 @@
+.loading-spinner {
+
+}
+
+.loading-spinner:after {
+    content: "";
+    display: block;
+    border-radius: 100%;
+    border: 15vmin solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: loading-spinner 1.75s infinite;
+}
+
+@keyframes loading-spinner {
+    0% {
+        transform: rotate(0);
+        animation-timing-function: ease-in;
+    }
+    25% {
+        transform: rotate(-10deg);
+        animation-timing-function: linear;
+    }
+    50% {
+        transform: rotate(90deg); 
+        animation-timing-function: ease-in;
+    }
+    75% {
+        transform: rotate(-30deg); 
+        animation-timing-function: linear;
+    }
+    90% {
+        transform: rotate(40deg); 
+        animation-timing-function: ease-in;
+    }
+    100% {
+        transform: rotate(180deg);
+        animation-timing-function: ease-out;
+
+    }
+}

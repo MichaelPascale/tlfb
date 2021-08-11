@@ -51,6 +51,8 @@ try {
     throw new Exception('A secondary ID is not available for this record. Please check that the participant has been assigned a study ID.');
 
   $evt_index = array_search($event, $tlfb_events);
+  if ($evt_index === false)
+    throw new Exception('The timeline instrument is not designated for this event. Please check the database and try again.');
 
   if (!$redcap->verify_field($record, $event, $config[$pid]['fields']['show'], 1))
     throw new Exception('A start-of-visit form has not yet been filled or is marked as a no-show for the selected event. Please check the database and try again.');
@@ -94,6 +96,7 @@ try {
     <link rel="stylesheet" href="css/loading.css"/>
     <script src="lib/dayjs-1.10.6.min.js"></script>
     <script src="lib/dayjs-duration-1.10.6.min.js"></script>
+    <script src="lib/dayjs-customParseFormat-1.10.6.min.js"></script>
     <script src="lib/fullcalendar-5.8.0.js"></script>
     <script src="lib/jquery-3.6.0.min.js"></script>
     <script>const EVENT_NAME = <?php echo "'$event_info->event_name';"?></script>
@@ -129,7 +132,7 @@ try {
 
           </div>
         </div>
-        <div class="level-right">
+        <div class="level-right is-align-self-baseline">
           <span id="time"></span>
         </div>
       </div>
@@ -149,7 +152,7 @@ try {
         </div>
 
         <div class="level-right">
-          <button class="level-item button is-link" id="open-summary">View Summary</button>
+          <button class="level-item button" id="open-summary">View Summary</button>
         </div>
       </div>
 

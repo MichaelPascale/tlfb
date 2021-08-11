@@ -7,10 +7,10 @@ var CUR_EVT = '';               // The calendar date currently being edited.
 var SUBSTANCES = null;          // List of substances.
 var SUBSTANCES_BY_CAT = null;   // List of substances by category.
 var SUBSTANCE_CAT = null;       // List of substance categories.
-var DATE_FROM = new Date();     // TLFB start date.
-var DATE_TO = new Date();       // TLFB end date.
-var DATE_30 = new Date();       // 30 days ago.
-var DATE_90 = new Date();       // 90 days ago.
+var DATE_FROM = dayjs();     // TLFB start date.
+var DATE_TO = dayjs();       // TLFB end date.
+var DATE_30 = dayjs();       // 30 days ago.
+var DATE_90 = dayjs();       // 90 days ago.
 var SELECTED_SUBS = [];         // Substances selected in the substance list.
 
 // Helper function. Return a substance object given its label.
@@ -118,13 +118,25 @@ function eventClick (ev){
 $(document).ready(function () {
 
     dayjs.extend(dayjs_plugin_duration);
+    dayjs.extend(dayjs_plugin_customParseFormat);
+
+    // Followup visits.
+    if (LAST_VISIT) {
+        DATE_FROM = dayjs(LAST_VISIT.substring(0, 10), 'YYYY-MM-DD');
+
+    // Screen visit.
+    } else {
+        DATE_FROM = DATE_TO.subtract(DAYS, 'days');
+        DATE_30 = DATE_TO.subtract(30, 'days');
+        DATE_90 = DATE_TO.subtract(90, 'days');
+    }
 
     // Initialize the FullCalendar object.
     CAL = new FullCalendar.Calendar($("#calendar")[0], {
         initialView: "dayGridMonth",
         validRange: {
-            start: DATE_FROM,
-            end: DATE_TO
+            start: DATE_FROM.format('YYYY-MM-DD'),
+            end: DATE_TO.format('YYYY-MM-DD')
         },
         editable: true,
         dateClick: dateClick,
@@ -133,24 +145,12 @@ $(document).ready(function () {
     });
     CAL.render();
 
-    // Followup visits.
-    if (LAST_VISIT) {
-        DATE_FROM = dayjs(LAST_VISIT.substring(0, 10), 'YYYY-MM-DD').toDate();
-
-    // Screen visit.
-    } else {
-        DATE_FROM.setDate(DATE_TO.getDate() - DAYS);
-        DATE_30.setDate(DATE_TO.getDate() - 30);
-        DATE_90.setDate(DATE_TO.getDate() - 90);
-    }
-
-    let days = dayjs(DATE_TO).diff(DATE_FROM, 'day');
-    CAL.setOption('validRange', { start: DATE_FROM, end: DATE_TO });
+    const days = dayjs(DATE_TO).diff(DATE_FROM, 'day');
     $('#days').text(days);
     $('#substance-list-days').text(days);
-    $('#date-from').text(DATE_FROM.toDateString());
-    $('#date-to').text(DATE_TO.toDateString());
-    $('#substance-list-since').text(`Since ${DATE_FROM.toDateString()}`);
+    $('#date-from').text(DATE_FROM.format('MMM DD YYYY'));
+    $('#date-to').text(DATE_TO.format('MMM DD YYYY'));
+    $('#substance-list-since').text(`Since ${DATE_FROM.format('ddd MMM DD YYYY h:mma')}`);
 
     // Load list of substances.
     $.getJSON('substances.json', function (data) {
@@ -180,7 +180,7 @@ $(document).ready(function () {
 
     // Update the clock every second.
     setInterval(function () {
-        $('#time').text(((new Date()).toTimeString()));
+        $('#time').text((dayjs().format('ddd MMM DD YYYY h:mma')));
     }, 1000);
 
     // Set login dialog event handlers.
@@ -263,12 +263,14 @@ $(document).ready(function () {
                 CUR_EVT.unitsOther = unitsOther;
                 CUR_EVT.title = `${subs} ${occas}x ${amnt}${units || unitsOther}`;
                 CUR_EVT.textColor = '#FFFFFF';
-                CUR_EVT.backgroundColor = '#7B68EE';
+                CUR_EVT.backgroundColor = '#785EF0';
+                CUR_EVT.borderColor = '#785EF0';
                 if (recur) {
                     CUR_EVT.daysOfWeek = recurOn;
                     CUR_EVT.startRecur = CUR_EVT.date;
                     CUR_EVT.endRecur = recurUntil;
-                    CUR_EVT.backgroundColor = '#8070FF';
+                    CUR_EVT.backgroundColor = '#8060F2';
+                    CUR_EVT.borderColor = '#8060F2';
                 }
                 CAL.addEvent(CUR_EVT);
             }
@@ -330,8 +332,9 @@ $(document).ready(function () {
             } else {
                 CUR_EVT.title = text;
                 CUR_EVT.type = 'key-event';
-                CUR_EVT.textColor = '#000000';
-                CUR_EVT.backgroundColor = '#FF7F50';
+                CUR_EVT.textColor = '#FFFFFF';
+                CUR_EVT.backgroundColor = '#DC267F';
+                CUR_EVT.borderColor = '#DC267F';
                 CAL.addEvent(CUR_EVT);
             }
         }
@@ -386,7 +389,7 @@ $(document).ready(function () {
         let file = new Blob([data], {type: 'text/json'});
         let link = $('#summary-download')[0];
         link.href = URL.createObjectURL(file);
-        link.download = `${SECONDARY_ID} ${(new Date()).toISOString()}.json`;
+        link.download = `${SECONDARY_ID} ${dayjs().toISOString()}.json`;
         $('#summary-summary').text(data);
 
         const substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');
@@ -439,7 +442,10 @@ $(document).ready(function () {
         $.post('save.php', {
             pid: PARAMS.get('pid'),
             record: PARAMS.get('record'),
-            secondary: SECONDARY_ID
+            secondary: SECONDARY_ID,
+            from: DATE_FROM.format('YYYY-MM-DD'),
+            to: DATE_TO.format('YYYY-MM-DD'),
+            raw: JSON.stringify(CAL.getEvents())
         }, function () {
             $('#modal-login').removeClass('is-active');
         }).fail(function (data) {

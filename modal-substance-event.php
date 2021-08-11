@@ -31,7 +31,7 @@
         <div id="substance-event-amount-section" class="field is-grouped">
           <div class="control">
             <label class="label">Average Amount Used Each Time</label>
-            <input id="substance-event-amount" class="input" type="number" min="0" max="1000000" step="any" value="0.00">
+            <input id="substance-event-amount" class="input" type="number" min="0.0000001" max="1000000" step="any" value="0.00">
           </div>
           <div class="control">
             <label class="label">Units</label>
@@ -80,10 +80,6 @@
             <input id="substance-event-recur-until" class="input" type="date">
           </div>
         </div>
-
-
-
-
 
       </div>
     </section>

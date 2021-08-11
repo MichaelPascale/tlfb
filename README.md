@@ -1,11 +1,11 @@
 # Multisubstance Online Timeline Follow-Back
 
-The timeline follow-back is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by Linda and Mark Sobell.
+The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by [Linda C. and Mark B. Sobell](##Credits). This web-based timeline form has beed developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and is designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
+
 
 ## Prerequisites
 
 Download the following libraries. Rename accordingly and place the files under `lib/`.
-
 
 - `bulma-0.9.2.min.css`
 - `fullcalendar-5.8.0.css`
@@ -13,6 +13,7 @@ Download the following libraries. Rename accordingly and place the files under `
 - `jquery-3.6.0.min.js`
 - `dayjs-1.10.6.min.js`
 - `dayjs-duration-1.10.6.min.js` (plugin)
+- `dayjs-customParseFormat-1.10.6.min.js` (plugin)
 
 A REDCap database must have scoring instrument to store the summarized results of the timeline follow-back. Upload `instrument.csv` to your database.
 
@@ -51,6 +52,7 @@ timeline[days]=90
 
 Also present should be a `substances.json`.
 
+
 ### `substances.json`
 
 ```jsonc
@@ -77,6 +79,8 @@ Also present should be a `substances.json`.
 }
 
 ```
+
+
 ## Credits
 
 Sobell L.C., Sobell M.B. (1992) Timeline Follow-Back.
@@ -85,11 +89,12 @@ Adapted from the timeline follow-back application developed for the [Adolescent 
 
 Made possible with [FullCalendar](https://fullcalendar.io/), [jQuery](https://jquery.com/), [Guzzle](https://docs.guzzlephp.org/en/stable/), [Day.js](https://day.js.org/), [Bulma](https://bulma.io/), and [Material Design Icons](https://github.com/google/material-design-icons).
 
+
 ## References
 
 Lisdahl, K. M., Sher, K. J., Conway, K. P., Gonzalez, R., Feldstein Ewing, S. W., Nixon, S. J., Tapert, S., Bartsch, H., Goldstein, R. Z., & Heitzeg, M. (2018). _Adolescent brain cognitive development (ABCD) study: Overview of substance use assessment methods_. Developmental Cognitive Neuroscience, 32, 80–96. https://doi.org/10.1016/j.dcn.2018.02.007
 
-Nova Southeastern University. (n.d.). _Timeline Followback Forms and Related Materials_. NSU. Retrieved August 9, 2021, from https://www.nova.edu/gsc/forms/timeline-followback-forms.html
+Nova Southeastern University. (n.d.). _Timeline Followback Forms and Related Materials_. NSU Guided Self-Change. Retrieved August 9, 2021, from https://www.nova.edu/gsc/forms/timeline-followback-forms.html
 
 Robinson, S. M., Sobell, L. C., Sobell, M. B., & Leo, G. I. (2014). _Reliability of the Timeline Followback for cocaine, cannabis, and cigarette use_. Psychology of Addictive Behaviors, 28(1), 154–162. https://doi.org/10.1037/a0030992
 

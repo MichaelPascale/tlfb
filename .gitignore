@@ -1,5 +1,6 @@
 lib/
 vendor/
+data/
 composer.lock
 substances.json
 studies.json

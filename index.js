@@ -12,6 +12,7 @@ var DATE_TO = dayjs();       // TLFB end date.
 var DATE_30 = dayjs();       // 30 days ago.
 var DATE_90 = dayjs();       // 90 days ago.
 var SELECTED_SUBS = [];         // Substances selected in the substance list.
+var DAYS = DEFAULT_DAYS;
 
 // Helper function. Return a substance object given its label.
 function lookup_substance(label) {
@@ -126,7 +127,7 @@ $(document).ready(function () {
 
     // Screen visit.
     } else {
-        DATE_FROM = DATE_TO.subtract(DAYS, 'days');
+        DATE_FROM = DATE_TO.subtract(DEFAULT_DAYS, 'days');
         DATE_30 = DATE_TO.subtract(30, 'days');
         DATE_90 = DATE_TO.subtract(90, 'days');
     }
@@ -145,12 +146,12 @@ $(document).ready(function () {
     });
     CAL.render();
 
-    const days = dayjs(DATE_TO).diff(DATE_FROM, 'day');
-    $('#days').text(days);
-    $('#substance-list-days').text(days);
+    DAYS = dayjs(DATE_TO).diff(DATE_FROM, 'day');
+    $('#days').text(DAYS);
+    $('#substance-list-days').text(DAYS);
     $('#date-from').text(DATE_FROM.format('MMM DD YYYY'));
     $('#date-to').text(DATE_TO.format('MMM DD YYYY'));
-    $('#substance-list-since').text(`Since ${DATE_FROM.format('ddd MMM DD YYYY h:mma')}`);
+    $('#substance-list-since').text(`Since ${DATE_FROM.format('ddd MMM DD YYYY')}`);
 
     // Load list of substances.
     $.getJSON('substances.json', function (data) {
@@ -186,8 +187,8 @@ $(document).ready(function () {
     // Set login dialog event handlers.
     $('#close-login').click(function () {
         $('#loading').addClass('is-active');
-        let dob = $('#login-dob')[0].value;
-        let username = $('#login-username')[0].value;
+        let dob = $('#login-dob').val();
+        let username = $('#login-username').val();
 
         if (dob && username) {
             $.post('auth.php', {
@@ -441,13 +442,58 @@ $(document).ready(function () {
         
         $.post('save.php', {
             pid: PARAMS.get('pid'),
+            event: PARAMS.get('event'),
             record: PARAMS.get('record'),
             secondary: SECONDARY_ID,
+            dob: $('#login-dob').val(),
+            username: $('#login-username').val(),
             from: DATE_FROM.format('YYYY-MM-DD'),
             to: DATE_TO.format('YYYY-MM-DD'),
-            raw: JSON.stringify(CAL.getEvents())
+            days: DAYS,
+            raw: JSON.stringify(CAL.getEvents().map(x => ({
+                title: x?.title,
+                type: x?.extendedProps?.type,
+                start: x?.start,
+                end: x?.end,
+                category: x?.extendedProps?.category,
+                substance: x?.extendedProps?.substance,
+                occasions: x?.extendedProps?.occasions,
+                amount: x?.extendedProps.amount,
+                units: x?.extendedProps.units,
+                unitsOther: x?.extendedProps.unitsOther,
+                units: x?.extendedProps.units
+              
+            }))),
+            summary: {
+                tlfb_etoh_total_days: $('#tlfb_etoh_total_days').text(),
+                tlfb_mj_total_days: $('#tlfb_mj_total_days').text(),
+                tlfb_nic_total_days: $('#tlfb_nic_total_days').text(),
+
+                tlfb_etoh_total_units: $('#tlfb_etoh_total_units').text(),
+                tlfb_mj_total_units: $('#tlfb_mj_total_units').text(),
+                tlfb_nic_total_units: $('#tlfb_nic_total_units').text(),
+
+                tlfb_etoh_avg_unitsday: $('#tlfb_etoh_avg_unitsday').text().replace('NaN', ''),
+                tlfb_mj_avg_unitsday: $('#tlfb_mj_avg_unitsday').text().replace('NaN', ''),
+                tlfb_nic_avg_unitsday: $('#tlfb_nic_avg_unitsday').text().replace('NaN', ''),
+
+                tlfb_etoh_avg_units: $('#tlfb_etoh_avg_units').text(),
+                tlfb_mj_avg_units: $('#tlfb_mj_avg_units').text(),
+                tlfb_nic_avg_units: $('#tlfb_nic_avg_units').text(),
+
+                tlfb_etoh_avg_days: $('#tlfb_etoh_avg_days').text(),
+                tlfb_mj_avg_days: $('#tlfb_mj_avg_days').text(),
+                tlfb_nic_avg_days: $('#tlfb_nic_avg_days').text(),
+
+                tlfb_etoh_last_use: $('#tlfb_etoh_last_use').text().replace('NaN', ''),
+                tlfb_mj_last_use: $('#tlfb_mj_last_use').text().replace('NaN', ''),
+                tlfb_nic_last_use: $('#tlfb_nic_last_use').text().replace('NaN', '')
+            }
         }, function () {
-            $('#modal-login').removeClass('is-active');
+            $('#save-summary').attr('disabled', true).addClass('is-success').text('Saved');
+            $('#close-summary').remove();
+            $('#summary-error').addClass('is-hidden');
+            $('#summary').text(`Data has been saved successfully for ${SECONDARY_ID}. It is safe to close this window.`)
         }).fail(function (data) {
             $('#summary-error-message').text(data.responseText);
             $('#summary-error').removeClass('is-hidden');

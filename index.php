@@ -102,7 +102,7 @@ try {
     <script>const EVENT_NAME = <?php echo "'$event_info->event_name';"?></script>
     <script>const SECONDARY_ID = <?php echo "'$record_secondary_id';"?></script>
     <script>const LAST_VISIT = <?php echo "'$date_last_visit';"?></script>
-    <script>const DAYS = <?php echo "'{$config[$pid]['timeline']['days']}';"?></script>
+    <script>const DEFAULT_DAYS = <?php echo "'{$config[$pid]['timeline']['days']}';"?></script>
     <script src="calculate.js"></script>
     <script src="index.js"></script>
   </head>

@@ -42,7 +42,7 @@ try {
 
   $pt = $redcap->get_patient(
     $record,
-    $config[$pid]['events']['screen'],
+    $config[$pid]['events']['baseline'],
     [$config[$pid]['fields']['secondary_id']]
   );
 

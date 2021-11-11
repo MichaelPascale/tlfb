@@ -1,6 +1,6 @@
 # Multisubstance Online Timeline Follow-Back
 
-The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by [Linda C. and Mark B. Sobell](##Credits). This web-based timeline form has beed developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and is designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
+The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by [Linda C. and Mark B. Sobell](#Credits). This web-based timeline form has beed developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and is designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
 
 
 ## Prerequisites
@@ -45,6 +45,9 @@ fields[dob]='dob'
 fields[start]='visitstart_starttime'
 # Whether the participant showed up for the visit.
 fields[show]='visitstart_ptshowed'
+
+# Date of the timeline follow-back completion.
+fields[tlfb_date]='tlfb_date'
 
 # The default number of days to look back.
 timeline[days]=90

@@ -48,29 +48,29 @@ try {
     $redcap->import($record, $event, [
             'tlfb_days' => $_POST['days'],
 
-            'tlfb_etoh_total_days' => $summary['tlfb_etoh_total_days'],
-            'tlfb_mj_total_days' => $summary['tlfb_mj_total_days'],
-            'tlfb_nic_total_days' => $summary['tlfb_nic_total_days'],
+            'tlfb_etoh_total_days' => round($summary['tlfb_etoh_total_days'], 3),
+            'tlfb_mj_total_days' => round($summary['tlfb_mj_total_days'], 3),
+            'tlfb_nic_total_days' => round($summary['tlfb_nic_total_days'], 3),
 
-            'tlfb_etoh_total_units' => $summary['tlfb_etoh_total_units'],
-            'tlfb_mj_total_units' => $summary['tlfb_mj_total_units'],
-            'tlfb_nic_total_units' => $summary['tlfb_nic_total_units'],
+            'tlfb_etoh_total_units' => round($summary['tlfb_etoh_total_units'], 3),
+            'tlfb_mj_total_units' => round($summary['tlfb_mj_total_units'], 3),
+            'tlfb_nic_total_units' => round($summary['tlfb_nic_total_units'], 3),
 
-            'tlfb_etoh_avg_unitsday' => $summary['tlfb_etoh_avg_unitsday'],
-            'tlfb_mj_avg_unitsday' => $summary['tlfb_mj_avg_unitsday'],
-            'tlfb_nic_avg_unitsday' => $summary['tlfb_nic_avg_unitsday'],
+            'tlfb_etoh_avg_unitsday' => round($summary['tlfb_etoh_avg_unitsday'], 3),
+            'tlfb_mj_avg_unitsday' => round($summary['tlfb_mj_avg_unitsday'], 3),
+            'tlfb_nic_avg_unitsday' => round($summary['tlfb_nic_avg_unitsday'], 3),
 
-            'tlfb_etoh_avg_units' => $summary['tlfb_etoh_avg_units'],
-            'tlfb_mj_avg_units' => $summary['tlfb_mj_avg_units'],
-            'tlfb_nic_avg_units' => $summary['tlfb_nic_avg_units'],
+            'tlfb_etoh_avg_units' => round($summary['tlfb_etoh_avg_units'], 3),
+            'tlfb_mj_avg_units' => round($summary['tlfb_mj_avg_units'], 3),
+            'tlfb_nic_avg_units' => round($summary['tlfb_nic_avg_units'], 3),
 
-            'tlfb_etoh_avg_days' => $summary['tlfb_etoh_avg_days'],
-            'tlfb_mj_avg_days' => $summary['tlfb_mj_avg_days'],
-            'tlfb_nic_avg_days' => $summary['tlfb_nic_avg_days'],
+            'tlfb_etoh_avg_days' => round($summary['tlfb_etoh_avg_days'], 3),
+            'tlfb_mj_avg_days' => round($summary['tlfb_mj_avg_days'], 3),
+            'tlfb_nic_avg_days' => round($summary['tlfb_nic_avg_days'], 3),
 
-            'tlfb_etoh_last_use' => $summary['tlfb_etoh_last_use'],
-            'tlfb_mj_last_use' => $summary['tlfb_mj_last_use'],
-            'tlfb_nic_last_use' => $summary['tlfb_nic_last_use'],
+            'tlfb_etoh_last_use' => round($summary['tlfb_etoh_last_use']),
+            'tlfb_mj_last_use' => round($summary['tlfb_mj_last_use']),
+            'tlfb_nic_last_use' => round($summary['tlfb_nic_last_use']),
 
             'tlfb_compby' => $username,
             'tlfb_date' => $to,

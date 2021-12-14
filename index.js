@@ -99,6 +99,7 @@ function eventClick (ev){
         $('#substance-event-amount').val(CUR_EVT.extendedProps.amount);
         $('#substance-event-units').val(CUR_EVT.extendedProps.units);
         $('#substance-event-units-other').val(CUR_EVT.extendedProps.unitsOther);
+        $('#substance-event-notes').val(CUR_EVT.extendedProps.notes);
         // $('#substance-event-recurring').prop('disabled', true);
         $('#substance-event-recur-until').prop('min', CUR_EVT.start.toISOString().substr(0,10));
         $('#substance-event-recur-until').prop('max', DATE_TO.toISOString().substr(0,10));
@@ -236,6 +237,7 @@ $(document).ready(function () {
             let amnt = sub.units?.length ? $('#substance-event-amount').val() : '';
             let units = sub.units?.length ? $('#substance-event-units').val() : '';
             let unitsOther = subs.units?.length ? $('#substance-event-units-other').val() : '';
+            let notes = $('#substance-event-notes').val();
             let recur = $('#substance-event-recurring').prop('checked');
             let recurOn = $('#substance-event-recur-on').val();
             let recurUntil = $('#substance-event-recur-until').val();
@@ -247,6 +249,7 @@ $(document).ready(function () {
                 CUR_EVT.setExtendedProp('amount', amnt);
                 CUR_EVT.setExtendedProp('units', units);
                 CUR_EVT.setExtendedProp('unitsOther', unitsOther);
+                CUR_EVT.setExtendedProp('notes', notes);
                 CUR_EVT.setProp('title',`${subs} ${occas}x ${amnt}${units || unitsOther}`);
                 if (recur) {
                     CUR_EVT.setProp('daysOfWeek', recurOn);
@@ -262,6 +265,7 @@ $(document).ready(function () {
                 CUR_EVT.amount = amnt;
                 CUR_EVT.units = units;
                 CUR_EVT.unitsOther = unitsOther;
+                CUR_EVT.notes = notes;
                 CUR_EVT.title = `${subs} ${occas}x ${amnt}${units || unitsOther}`;
                 CUR_EVT.textColor = '#FFFFFF';
                 CUR_EVT.backgroundColor = '#785EF0';

@@ -72,7 +72,7 @@ try {
             'tlfb_mj_last_use' => round($summary['tlfb_mj_last_use']),
             'tlfb_nic_last_use' => round($summary['tlfb_nic_last_use']),
 
-            'tlfb_compby' => $username,
+            $config[$pid]['fields']['signature'] ?? 'tlfb_compby' => $username,
             'tlfb_date' => $to,
             $config[$pid]['forms']['tlfb'].'_complete' => 1
     ]);

@@ -1,87 +1,15 @@
 <?php
+if (empty($_GET) or !isset($_GET['subject'], $_GET['event'], $_GET['start'], $_GET['end'], $_GET['staff'])) {
+  $chr_query = $_SERVER['QUERY_STRING'];
+  header("Location: login.php?$chr_query");
+}
+
+$arr_config     = yaml_parse_file('config.yml');
 
 require_once 'vendor/autoload.php';
 require_once 'php/util.php';
 require_once 'php/errors.php';
 require_once 'php/redcap.php';
-
-$config = parse_ini_file('config.ini', true);
-
-$pid = null;
-$event = null;
-$record = null;
-
-$failed = false;
-$failed_reason = '';
-$warning = false;
-$warning_reason = '';
-
-$pt = null;
-$event_info = null;
-$record_secondary_id = null;
-
-$date_last_visit = null;
-
-
-try {
-  // Check URL Parameters
-  if (empty($_GET) or !isset($_GET['pid'], $_GET['event'], $_GET['record']))
-    throw new Exception('This application must be accessed from within a REDCap record with the link in the application menu.');
-
-  $pid = $_GET['pid'];
-  $event = $_GET['event'];
-  $record = $_GET['record'];
-
-  // Obtain information from REDCap.
-  $redcap = new REDCapAPI($config[$pid]['redcap']['uri'], $config[$pid]['redcap']['key']);
-
-  $project_info = $redcap->request('project');
-  $events = $redcap->request('event');
-  $event_info = find_by_property($events, 'unique_event_name', $event);
-  $tlfb_events = $redcap->get_instrument_event_map($config[$pid]['redcap']['arm'], $config[$pid]['forms']['tlfb']);
-
-  $pt = $redcap->get_patient(
-    $record,
-    $config[$pid]['events']['baseline'],
-    [$config[$pid]['fields']['secondary_id']]
-  );
-
-  $record_secondary_id = $pt->{$config[$pid]['fields']['secondary_id']};
-  if (!$record_secondary_id)
-    throw new Exception('A secondary ID is not available for this record. Please check that the participant has been assigned a study ID.');
-
-  $evt_index = array_search($event, $tlfb_events);
-  if ($evt_index === false)
-    throw new Exception('The timeline instrument is not designated for this event. Please check the database and try again.');
-
-  if (!$redcap->verify_field($record, $event, $config[$pid]['fields']['show'], 1))
-    throw new Exception('A start-of-visit form has not yet been filled or is marked as a no-show for the selected event. Please check the database and try again.');
-
-  if ($redcap->verify_form_complete($record, $event, $config[$pid]['forms']['tlfb']))
-    throw new Exception('A timeline record already exists in REDCap for the selected event. Please check the database and try again.');
-
-  
-  if ($evt_index > 0) {
-    $last_visit = $redcap->request('record', [
-      'records' => [$record],
-      'events' => [$tlfb_events[$evt_index - 1]],
-      'fields' => [$config[$pid]['fields']['tlfb_date']]
-    ]);
-    
-    // Check that the previous event has a record. Pass the date of the last visit to the client.
-    if (count($last_visit) > 0  && $last_visit[0]->{$config[$pid]['fields']['tlfb_date']}) {
-      $date_last_visit = substr($last_visit[0]->{$config[$pid]['fields']['tlfb_date']}, 0, 10);
-    } else {
-      $warning = true;
-      $warning_reason .= "There is no previous timeline record. A default calendar of {$config[$pid]['timeline']['days']} days will be used.";
-    }
-  }
-
-} catch (Exception $e) {
-  $failed = true;
-  $failed_reason .= $e->getMessage();
-}
-
 
 ?>
 
@@ -99,28 +27,26 @@ try {
     <script src="lib/dayjs-customParseFormat-1.10.6.min.js"></script>
     <script src="lib/fullcalendar-5.8.0.js"></script>
     <script src="lib/jquery-3.6.0.min.js"></script>
-    <script>const EVENT_NAME = <?php echo "'$event_info->event_name';"?></script>
-    <script>const SECONDARY_ID = <?php echo "'$record_secondary_id';"?></script>
-    <script>const LAST_VISIT = <?php echo "'$date_last_visit';"?></script>
-    <script>const DEFAULT_DAYS = <?php echo "'{$config[$pid]['timeline']['days']}';"?></script>
+    <script>
+      const EVENT_NAME    = "<?php echo $_GET['event']; ?>";
+      const SECONDARY_ID  = "<?php echo $_GET['subject']; ?>";
+      const LAST_VISIT    = "<?php echo $_GET['start']; ?>";
+      const DEFAULT_DAYS  = "<?php echo $arr_config[$_GET['pid']]['days']; ?>";
+      var DATE_FROM     = dayjs("<?php echo $_GET['start']; ?>");
+      var DATE_TO       = dayjs("<?php echo $_GET['end']; ?>");
+    </script>
     <script src="calculate.js"></script>
     <script src="index.js"></script>
   </head>
   <body>
     <section class="section">
-      <article class="message is-warning <?php if (!$warning) echo 'is-hidden'?>">
-        <div class="message-body">
-          <p><?php echo $warning_reason?></p>
-        </div>
-      </article>
-
       <div class="level">
         <div class="level-left">
           <div class="level-item is-flex is-flex-direction-column is-align-items-start">
             <div class="is-flex is-align-items-baseline">
-            <h1 class="title"><span id="days"></span>-day Timeline for <?php if (!$failed) echo "$record_secondary_id"?></h1>
+            <h1 class="title"><span id="days"></span>-day Timeline for <?php echo $_GET['subject']; ?></h1>
             <p class="subtitle ml-2">
-              at <?php if (!$failed) echo "$event_info->event_name"?> 
+              at <?php echo $arr_config[$_GET['pid']]['events'][$_GET['event']];?> 
             </p>
             </div>
             <p>
@@ -161,7 +87,6 @@ try {
 
     <p id="debug"></p>
 
-    <?php include 'modal-login.php'; ?>
     <?php include 'modal-summary.php'; ?>
     <?php include 'modal-substance-list.php'; ?>
     <?php include 'modal-substance-event.php'; ?>

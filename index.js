@@ -7,10 +7,8 @@ var CUR_EVT = '';               // The calendar date currently being edited.
 var SUBSTANCES = null;          // List of substances.
 var SUBSTANCES_BY_CAT = null;   // List of substances by category.
 var SUBSTANCE_CAT = null;       // List of substance categories.
-var DATE_FROM = dayjs().startOf('day');     // TLFB start date.
-var DATE_TO = dayjs().startOf('day');       // TLFB end date.
-var DATE_30 = dayjs().startOf('day');       // 30 days ago.
-var DATE_90 = dayjs().startOf('day');       // 90 days ago.
+// var DATE_30 = dayjs().startOf('day');       // 30 days ago.
+// var DATE_90 = dayjs().startOf('day');       // 90 days ago.
 var SELECTED_SUBS = [];         // Substances selected in the substance list.
 var DAYS = DEFAULT_DAYS;
 

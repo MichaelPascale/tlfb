@@ -35,11 +35,6 @@ function dateClick (ev){
     console.log('dateClick')
     CUR_EVT = ev;
 
-    if (CUR_EVT.date < DATE_FROM || CUR_EVT.date > DATE_TO) {
-        alert('The selected date is outside of the date range.');
-        return;
-    }
-
     switch (MODE) {
     case 'substance-event':
         if (!SELECTED_SUBS.length) {
@@ -66,13 +61,8 @@ function dateClick (ev){
 
 // Set event handler for when user selects a range of calendar dates.
 function dateSelect (ev){
-    console.log('dateSelect')
+    console.log('dateSelect', ev)
     CUR_EVT = ev;
-
-    if (CUR_EVT.start < DATE_FROM || CUR_EVT.end > DATE_TO) {
-        alert('The selected date range extends beyond the allowed date range.');
-        return;
-    }
 
     if (MODE == 'key-event') {
         $('#key-event-date').text(`${ev.start.toDateString()} to ${ev.end.toDateString()}`);
@@ -136,7 +126,7 @@ $(document).ready(function () {
         initialView: "dayGridMonth",
         validRange: {
             start: DATE_FROM.format('YYYY-MM-DD'),
-            end: DATE_TO.format('YYYY-MM-DD')
+            end: DATE_TO.add(1, 'day').format('YYYY-MM-DD')
         },
         editable: true,
         dateClick: dateClick,
@@ -179,9 +169,11 @@ $(document).ready(function () {
     });
 
     // Update the clock every second.
-    setInterval(function () {
-        $('#time').text((dayjs().format('ddd MMM DD YYYY h:mma')));
-    }, 1000);
+    const fn_clock = function () {
+        $('#time').text(`Today is ${dayjs().format('dddd, MMM DD YYYY')}`);
+        setTimeout(fn_clock, 60000)
+    }
+    fn_clock();
 
     // Set login dialog event handlers.
     $('#close-login').click(function () {
@@ -392,7 +384,7 @@ $(document).ready(function () {
         let file = new Blob([data], {type: 'text/json'});
         let link = $('#summary-download')[0];
         link.href = URL.createObjectURL(file);
-        link.download = `${SECONDARY_ID} ${dayjs().toISOString()}.json`;
+        link.download = `TLFB-${PARAMS.get('pid')}-${PARAMS.get('subject')}-${PARAMS.get('record')}-${PARAMS.get('start')}-${PARAMS.get('end')}.json`;
         $('#summary-summary').text(data);
 
         const substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');

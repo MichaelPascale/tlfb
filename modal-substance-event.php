@@ -25,6 +25,8 @@
           <div class="control">
             <label class="label">No. Times Used on This Date</label>
             <input id="substance-event-occasions" class="input" type="number" min="1" max="500" step="1" value="0" required>
+            <p id="substance-event-occasions-help" class="help">Enter total number of occasions or use sessions.</p>
+
           </div>
         </div>
 
@@ -32,6 +34,7 @@
           <div class="control">
             <label class="label">Average Amount Used Each Time</label>
             <input id="substance-event-amount" class="input" type="number" min="0.0000001" max="1000000" step="any" value="0.00">
+            <p id="substance-event-amount-help" class="help">Enter the amount per session, <u>not the total amount</u>.</p>
           </div>
           <div class="control">
             <label class="label">Units</label>

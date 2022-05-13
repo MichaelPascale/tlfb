@@ -1,5 +1,10 @@
 <?php
 
+require_once 'php/errors.php';
+require_once 'php/util.php';
+
+ob_start();
+
 $arr_config     = yaml_parse_file('config.yml');
 
 $chr_pr_pid     = 'default';
@@ -8,6 +13,8 @@ $chr_pr_record  = null;
 $chr_pr_subject = null;
 $chr_pr_start   = null;
 $chr_pr_end     = null;
+$chr_pr_staff   = null;
+$chr_pr_keyfield = null;
 
 // REDCap Project
 if(!empty($_GET['pid'])) {
@@ -22,7 +29,13 @@ if(!empty($_GET['event'])) {
 }
 
 // REDCap Record
-if(!empty($_GET['record'])) $chr_pr_record = $_GET['record'];
+if(!empty($_GET['record'])) {
+  $chr_pr_record = $_GET['record'];
+
+  // If record specified, keyfield must also be specified.
+  assert(array_key_exists('keyfield', $_GET));
+  $chr_pr_keyfield = $_GET['keyfield'];
+}
 
 // Subject ID
 if(!empty($_GET['subject'])) $chr_pr_subject = $_GET['subject'];
@@ -32,6 +45,22 @@ if(!empty($_GET['end'])) $chr_pr_end = $_GET['end'];
 
 // Start Date
 if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
+
+// If a REDCap project, validate authkey.
+if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
+
+  $chr_warn = 'Could not validate user credentials against REDCap database. Ensure the application is accessed from the REDCap bookmarks menu.';
+  
+  if(empty($_POST['authkey']))
+    throw new Exception($chr_warn);
+  
+  $arr_user = fn_rc_validate_authkey($arr_config[$chr_pr_pid]['redcap-uri'], $_POST['authkey']);
+
+  if(is_null( $arr_user) or !array_key_exists('username', $arr_user))
+    throw new Exception($chr_warn);
+
+  $chr_pr_staff = $arr_user['username'];
+} 
 
 ?>
 
@@ -74,10 +103,17 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
         }
 
         if (dat_start.isValid() && dat_end.isValid() && !dat_start.isBefore(dat_end)) {
-          $('#help-date').text('Start date must be before end date.').show();
+          $('#help-date-start').text('Start date must be before end date.').show();
           return false;
         } else {
-          $('#help-date').hide();
+          $('#help-date-start').hide();
+        }
+
+        if (dat_end.isAfter(dayjs())) {
+          $('#help-date-end').text('End date must not be later than the current date.').show();
+          return false;
+        } else {
+          $('#help-date-end').hide();
         }
 
         return true;
@@ -89,6 +125,9 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
         const int_days = <?php echo $arr_config[$chr_pr_pid]['days']; ?>;
         const dat_start = dayjs($('#start').val());
         const dat_end = dayjs($('#end').val());
+
+        $('#suggest-date-today').text(`Today is ${dayjs().format('YYYY-MM-DD')}.`).show();
+
 
         if (dat_end.isValid()) {
           $('#suggest-date-30').text(`30 days before ${dat_end.format('YYYY-MM-DD')} is ${dat_end.subtract(30, 'days').format('YYYY-MM-DD')}.`).show();
@@ -104,7 +143,7 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
 
       $(document).ready(function () {
         $('#login-form').submit(function(evt){
-          $('#submit').attr('disabled', true);
+          $('#submit').attr('readonly', true);
 
           if (fn_validate(evt))
             return;
@@ -113,7 +152,7 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
           $('#submit').removeClass('is-info').addClass('is-danger');
 
           setTimeout(function(){
-            $('#submit').attr('disabled', false).addClass('is-info').removeClass('is-danger');
+            $('#submit').attr('readonly', false).addClass('is-info').removeClass('is-danger');
           }, 100);
         }).change(fn_validate).change(fn_suggest_date);
 
@@ -159,7 +198,7 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
                               type="text" 
                               placeholder="E2A4M"
                               required 
-                              <?php if (!is_null($chr_pr_subject)) echo 'disabled value="'. $chr_pr_subject . '"'?>
+                              <?php if (!is_null($chr_pr_subject)) echo 'readonly value="'. $chr_pr_subject . '"'?>
                             >
                             <span class="icon is-small is-left">
                               <i class="mdi mdi-card-account-details mdi-24px"></i>
@@ -201,7 +240,7 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
                               <i class="mdi mdi-calendar-arrow-left mdi-24px"></i>
                             </span>
                           </div>
-                          <p id="help-date" class="help is-danger" style="display: none;"></p>
+                          <p id="help-date-start" class="help is-danger" style="display: none;"></p>
                         </div>
 
 
@@ -216,24 +255,36 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
                               <i class="mdi mdi-calendar-arrow-right mdi-24px"></i>
                             </span>
                           </div>
+                          <p id="help-date-end" class="help is-danger" style="display: none;"></p>
                           <p class="help"><b id="suggest-date"></b></p>
                           <p id="suggest-date-30" class="help"></p>
                           <p id="suggest-date-90" class="help"></p>
+                          <p id="suggest-date-today" class="help"></p>
                         </div>
 
                         <!-- Staff -->
                         <div class="field">
                           <label class="label">Research Staff</label>
                           <div class="control has-icons-left">
-                            <input id="staff" name="staff" class="input is-success" type="text" placeholder="Username" required>
+                            <input id="staff" name="staff" class="input is-success" type="text" placeholder="Username" required
+                              <?php if (!is_null($chr_pr_staff)) echo 'readonly value="'. $chr_pr_staff . '"'?>
+                            >
                             <span class="icon is-small is-left">
                               <i class="mdi mdi-bank mdi-24px"></i>
                             </span>
                           </div>
                         </div>
 
+                        <?php if(!is_null($chr_pr_event)) {?>
+                          <input type="hidden" name="event" value="<?php echo $chr_pr_event; ?>"/>
+                        <?php }?>
+
                         <input type="hidden" name="pid" value="<?php echo $chr_pr_pid; ?>">
-                        <input type="hidden" name="record" value="<?php echo $chr_pr_record; ?>">
+
+                        <?php if(!is_null($chr_pr_record) and !is_null($chr_pr_keyfield)) { ?>
+                          <input type="hidden" name="record" value="<?php echo $chr_pr_record; ?>">
+                          <input type="hidden" name="keyfield" value="<?php echo $chr_pr_keyfield; ?>">
+                        <?php } ?>
                     </form>
                 </div>
                 <footer class="card-footer">
@@ -255,3 +306,5 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
 </body>
 
 </html>
+
+<?php ob_end_flush(); ?>  

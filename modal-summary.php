@@ -17,6 +17,14 @@
           </div>
         </article>
 
+        <article id="summary-warning" class="message is-warning">
+          <div class="message-body">
+            <p id="summary-warning-message">
+              REDCap integration is temporarily disabled. Please <b>downlod the raw data file</b>.
+            </p>
+          </div>
+        </article>
+
         <table class="table">
           <thead>
             <tr>
@@ -48,7 +56,6 @@
           </tbody>
 
         </table>
-        <p class="has-text-centered my-4"><a id="summary-download">Download Raw Data</a></p>
       </div>
     </section>
 

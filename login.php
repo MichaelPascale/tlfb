@@ -182,7 +182,7 @@ if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
                     <p class="card-header-title is-justify-content-center">New Timeline Followback Session</p>
                 </header>
                 <div class="card-content">
-                    <form id="login-form" action="/index.php" method="get">
+                    <form id="login-form" action="index.php" method="get">
 
                         <p class="has-text-centered mb-5">
                           <?php echo $arr_config[$chr_pr_pid]['name']; ?>

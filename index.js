@@ -387,15 +387,13 @@ $(document).ready(function () {
             events: CAL.getEvents().map(x => ({
                 title: x?.title,
                 type: x?.extendedProps?.type,
-                start: x?.start,
-                end: x?.end,
+                start: x.start ? dayjs(x.start).format('YYYY-MM-DD') : undefined,
+                end: x.end ? dayjs(x.end).format('YYYY-MM-DD') : undefined,
                 category: x?.extendedProps?.category,
                 substance: x?.extendedProps?.substance,
                 occasions: x?.extendedProps?.occasions,
                 amount: x?.extendedProps.amount,
-                units: x?.extendedProps.units,
-                unitsOther: x?.extendedProps.unitsOther,
-                units: x?.extendedProps.units
+                units: x?.extendedProps.units ?? x?.extendedProps.unitsOther
             }))
         });
         let file = new Blob([DOWNLOAD], {type: 'text/json'});

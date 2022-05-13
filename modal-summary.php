@@ -7,23 +7,25 @@
       <p class="modal-card-title">Timeline Summary</p>
     </header>
 
-    <section id="summary" class="modal-card-body">
-      <div class="content">
-        <p><a id="summary-download">Click here to download the raw data.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
-        
-        <article id="summary-error" class="message is-danger is-hidden">
-          <div class="message-body">
-            <p id="summary-error-message"></p>
-          </div>
-        </article>
 
-        <article id="summary-warning" class="message is-warning">
+
+    <section class="modal-card-body">
+      <article id="summary-error" class="message is-danger is-hidden">
+        <div class="message-body">
+          <p id="summary-error-message"></p>
+        </div>
+      </article>
+      <div id="summary" class="content">
+
+      <article id="summary-warning" class="message is-warning">
           <div class="message-body">
             <p id="summary-warning-message">
               REDCap integration is temporarily disabled. Please <b>downlod the raw data file</b>.
             </p>
           </div>
         </article>
+
+        <p><a id="summary-download">Click here to download the raw data.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
 
         <table class="table">
           <thead>

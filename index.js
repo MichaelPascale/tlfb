@@ -11,6 +11,7 @@ var SUBSTANCE_CAT = null;       // List of substance categories.
 // var DATE_90 = dayjs().startOf('day');       // 90 days ago.
 var SELECTED_SUBS = [];         // Substances selected in the substance list.
 var DAYS = DEFAULT_DAYS;
+var DOWNLOAD = null;
 
 // Helper function. Return a substance object given its label.
 function lookup_substance(label) {
@@ -373,19 +374,35 @@ $(document).ready(function () {
         let events = CAL.getEvents();
 
         // Prep a downloadable JSON.
-        let data = JSON.stringify({
+        DOWNLOAD = JSON.stringify({
+            subject: SECONDARY_ID,
+            event: PARAMS.get('event'),
+            pid: PARAMS.get('pid'),
+            start: PARAMS.get('start'),
+            end: PARAMS.get('end'),
+            staff: PARAMS.get('staff'),
             record: PARAMS.get('record'),
-            id: SECONDARY_ID,
-            from: DATE_FROM,
-            to: DATE_TO,
-            substances: SELECTED_SUBS,
-            events: events
+            keyfield: PARAMS.get('keyfield'),
+            datetime: dayjs().toISOString(),
+            events: CAL.getEvents().map(x => ({
+                title: x?.title,
+                type: x?.extendedProps?.type,
+                start: x?.start,
+                end: x?.end,
+                category: x?.extendedProps?.category,
+                substance: x?.extendedProps?.substance,
+                occasions: x?.extendedProps?.occasions,
+                amount: x?.extendedProps.amount,
+                units: x?.extendedProps.units,
+                unitsOther: x?.extendedProps.unitsOther,
+                units: x?.extendedProps.units
+            }))
         });
-        let file = new Blob([data], {type: 'text/json'});
+        let file = new Blob([DOWNLOAD], {type: 'text/json'});
         let link = $('#summary-download')[0];
         link.href = URL.createObjectURL(file);
-        link.download = `TLFB-${PARAMS.get('pid')}-${PARAMS.get('subject')}-${PARAMS.get('record')}-${PARAMS.get('start')}-${PARAMS.get('end')}.json`;
-        $('#summary-summary').text(data);
+        link.download = `TLFB-${PARAMS.get('pid')}-${PARAMS.get('subject')}-${PARAMS.get('event')}-${PARAMS.get('start')}-${PARAMS.get('end')}.json`;
+        $('#summary-summary').text(DOWNLOAD);
 
         const substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');
         const weeks = DAYS / 7;
@@ -436,57 +453,18 @@ $(document).ready(function () {
         
         $.post('save.php', {
             pid: PARAMS.get('pid'),
-            event: PARAMS.get('event'),
-            record: PARAMS.get('record'),
-            secondary: SECONDARY_ID,
-            dob: $('#login-dob').val(),
-            username: $('#login-username').val(),
-            from: DATE_FROM.format('YYYY-MM-DD'),
-            to: DATE_TO.format('YYYY-MM-DD'),
-            days: DAYS,
-            raw: JSON.stringify(CAL.getEvents().map(x => ({
-                title: x?.title,
-                type: x?.extendedProps?.type,
-                start: x?.start,
-                end: x?.end,
-                category: x?.extendedProps?.category,
-                substance: x?.extendedProps?.substance,
-                occasions: x?.extendedProps?.occasions,
-                amount: x?.extendedProps.amount,
-                units: x?.extendedProps.units,
-                unitsOther: x?.extendedProps.unitsOther,
-                units: x?.extendedProps.units
-              
-            }))),
-            summary: {
-                tlfb_etoh_total_days: $('#tlfb_etoh_total_days').text(),
-                tlfb_mj_total_days: $('#tlfb_mj_total_days').text(),
-                tlfb_nic_total_days: $('#tlfb_nic_total_days').text(),
-
-                tlfb_etoh_total_units: $('#tlfb_etoh_total_units').text(),
-                tlfb_mj_total_units: $('#tlfb_mj_total_units').text(),
-                tlfb_nic_total_units: $('#tlfb_nic_total_units').text(),
-
-                tlfb_etoh_avg_unitsday: $('#tlfb_etoh_avg_unitsday').text().replace('NaN', ''),
-                tlfb_mj_avg_unitsday: $('#tlfb_mj_avg_unitsday').text().replace('NaN', ''),
-                tlfb_nic_avg_unitsday: $('#tlfb_nic_avg_unitsday').text().replace('NaN', ''),
-
-                tlfb_etoh_avg_units: $('#tlfb_etoh_avg_units').text(),
-                tlfb_mj_avg_units: $('#tlfb_mj_avg_units').text(),
-                tlfb_nic_avg_units: $('#tlfb_nic_avg_units').text(),
-
-                tlfb_etoh_avg_days: $('#tlfb_etoh_avg_days').text(),
-                tlfb_mj_avg_days: $('#tlfb_mj_avg_days').text(),
-                tlfb_nic_avg_days: $('#tlfb_nic_avg_days').text(),
-
-                tlfb_etoh_last_use: $('#tlfb_etoh_last_use').text().replace('NaN', ''),
-                tlfb_mj_last_use: $('#tlfb_mj_last_use').text().replace('NaN', ''),
-                tlfb_nic_last_use: $('#tlfb_nic_last_use').text().replace('NaN', '')
-            }
-        }, function () {
+            json: DOWNLOAD
+        }, function (data) {
             $('#save-summary').attr('disabled', true).addClass('is-success').text('Saved');
             $('#close-summary').remove();
-            $('#summary-error').addClass('is-hidden');
+
+            if (data) {
+                $('#summary-error-message').text(data);
+                $('#summary-error').removeClass('is-hidden').removeClass('is-danger').addClass('is-warning');
+            } else {
+                $('#summary-error').addClass('is-hidden');
+            }
+
             $('#summary').text(`Data has been saved successfully for ${SECONDARY_ID}. It is safe to close this window.`)
         }).fail(function (data) {
             $('#summary-error-message').text(data.responseText);

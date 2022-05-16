@@ -33,7 +33,6 @@ function update_substance_options() {
 
 // Set event handler for when user clicks a calendar date.
 function dateClick (ev){
-    console.log('dateClick')
     CUR_EVT = ev;
 
     switch (MODE) {
@@ -62,7 +61,6 @@ function dateClick (ev){
 
 // Set event handler for when user selects a range of calendar dates.
 function dateSelect (ev){
-    console.log('dateSelect', ev)
     CUR_EVT = ev;
 
     if (MODE == 'key-event') {
@@ -343,6 +341,121 @@ $(document).ready(function () {
         if (CUR_EVT) {
             CUR_EVT.remove();
         }
+    });
+
+    $('#open-upload').click(function () {
+        $('#filename-upload').text('*.json');
+        $('#add-upload').attr('disabled', true);
+        $('#form-upload').trigger('reset');
+        $('#upload-out').addClass('is-hidden');
+
+        $('#modal-upload').addClass('is-active');
+    });
+
+    $('#close-upload').click(function () {
+        $('#modal-upload').removeClass('is-active');
+    });
+
+    $('#upload-data').change(function (evt) {
+        $('#loading').addClass('is-active');
+        $('#filename-upload').text(evt.target.files[0].name);
+
+        const ob_rd = new FileReader();
+
+        ob_rd.onload = function (evt) {
+            const ob_data = JSON.parse(evt.target.result);
+
+            $('#upload-out-subject').removeClass('has-text-danger').text(ob_data.subject);
+            if (ob_data.subject != SECONDARY_ID)
+                $('#upload-out-subject').addClass('has-text-danger');
+
+            $('#upload-out-event').removeClass('has-text-danger').text(ob_data.event);
+            if (ob_data.event != EVENT_NAME)
+                $('#upload-out-event').addClass('has-text-danger');
+
+            $('#upload-out-start').removeClass('has-text-danger').text(ob_data.start);
+            if (ob_data.start != DATE_FROM.format('YYYY-MM-DD'))
+                $('#upload-out-start').addClass('has-text-danger');
+
+            $('#upload-out-end').removeClass('has-text-danger').text(ob_data.end);
+            if (ob_data.end != DATE_TO.format('YYYY-MM-DD'))
+                $('#upload-out-end').addClass('has-text-danger')
+
+            $('#upload-out-events').text(ob_data.events?.length);
+            ob_data.events.length ? ob_data.events.reduce(function(a,c) {
+                return dayjs(a) < dayjs(c.start) ? a : c.start
+            }, '1970-01-01') : 'None';
+
+            $('#upload-out-earliest').text(
+                ob_data.events.length ?
+                ob_data.events.reduce(function(a,c) {
+                    return a ? dayjs(a) < dayjs(c.start) ? a : c.start : c.start
+                }, null) :
+                'None'
+            );
+
+            $('#upload-out-latest').text(
+                ob_data.events.length ?
+                ob_data.events.reduce(function(a,c) {
+                    return dayjs(a) > dayjs(c.start) ? a : c.end || c.start
+                }, '1970-01-01') :
+                'None'
+            );
+
+            const arr_substances = Array.from(ob_data.events.reduce(function (a,c) {
+
+                if (c.type == 'substance-event')
+                    a.add(`${c.category}/${c.substance}`);
+
+                return a;
+
+            }, new Set()));
+
+            $('#upload-out-substances').removeClass('has-text-danger').text(
+                arr_substances.map(function (x) {return x.substr(x.search('/') + 1)}).toString()
+            );
+
+            window.ARR = arr_substances;
+            for (x of arr_substances) {
+                if (!SUBSTANCES.map(y=> `${y.cat}/${y.label}`).includes(x)) {
+                    $('#upload-out-end').addClass('has-text-danger');
+                    alert('A substance listed in the data file is not compatible with this configuration.');
+                    break;
+                }
+
+                const name = x.substr(x.search('/') + 1);
+                if (!SELECTED_SUBS.includes(x.substr(x.search('/') + 1)))
+                    SELECTED_SUBS.push(name);
+            }
+
+            self.IMPORT_EVENTS = ob_data.events.filter(function(x){
+                if (dayjs(x.start) < DATE_FROM || dayjs(x.start) > DATE_TO)
+                    return false;
+                
+                if (x.end)
+                    return dayjs(x.end) >= DATE_FROM && dayjs(x.end) <= DATE_TO
+
+                return true
+            });
+
+            $('#loading').removeClass('is-active');
+            $('#upload-out').removeClass('is-hidden');
+            $('#add-upload').attr('disabled', false);
+        };
+
+        ob_rd.readAsText(evt.target.files[0]);
+    });
+
+    $('#form-upload').submit(function (evt) {
+        evt.preventDefault();
+
+        for (ob_evt of IMPORT_EVENTS) {
+            CAL.addEvent(ob_evt)
+        }
+
+        $('#modal-upload').removeClass('is-active');
+
+        return false;
     });
 
     // Set button event handlers.

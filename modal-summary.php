@@ -20,7 +20,7 @@
       <article id="summary-warning" class="message is-warning">
           <div class="message-body">
             <p id="summary-warning-message">
-              REDCap integration is temporarily disabled. Please <b>downlod the raw data file</b>.
+              REDCap integration is temporarily disabled. Please <b>downlod the raw data file</b>. Backup copies of Data will continue to be saved to the server.
             </p>
           </div>
         </article>
@@ -62,7 +62,7 @@
     </section>
 
     <footer class="modal-card-foot">
-      <button id="save-summary" class="button is-link is-fullwidth">Save and Submit to REDCap</button>
+      <button id="save-summary" class="button is-link is-fullwidth">Save Data</button>
     </footer>
 
   </div>

@@ -299,7 +299,7 @@ if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
     </div>
     <footer class="footer p-2 mb-0">
         <div class="content has-text-centered">
-            <p class="is-size-7"> For internal use only. Unauthorized access is prohibited.<br> Copyright &copy; 2022. All rights reserved. Maintained by Michael Pascale &lt;<a href="mailto:mppascale@mgh.harvard.edu">mppascale@mgh.harvard.edu</a>&gt;. Source code is MIT licensed. </p>
+            <p class="is-size-7"> For internal use only. Unauthorized access is prohibited.<br> Maintained by Michael Pascale &lt;<a href="mailto:mppascale@mgh.harvard.edu">mppascale@mgh.harvard.edu</a>&gt;. Source code is MIT licensed. </p>
         </div>
     </footer>
     </div>

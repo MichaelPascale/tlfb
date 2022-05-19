@@ -506,7 +506,8 @@ $(document).ready(function () {
                 substance: x?.extendedProps?.substance,
                 occasions: x?.extendedProps?.occasions,
                 amount: x?.extendedProps.amount,
-                units: x?.extendedProps.units ?? x?.extendedProps.unitsOther
+                units: x?.extendedProps.units ?? x?.extendedProps.unitsOther,
+		notes: x?.extendedProps.notes
             }))
         });
         let file = new Blob([DOWNLOAD], {type: 'text/json'});

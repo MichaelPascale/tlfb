@@ -49,24 +49,27 @@ if(!empty($_GET['end'])) $chr_pr_end = $_GET['end'];
 // Start Date
 if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
 
+// Username
+if(!empty($_GET['username'])) $chr_pr_staff = $_GET['username'];
+
 // If a REDCap project, validate authkey.
-if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
+// if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
 
-  $chr_warning = 'Unable to verify user against REDCap database. Ensure the application is accessed from the REDCap bookmarks menu.';
+//   $chr_warning = 'Unable to verify user against REDCap database. Ensure the application is accessed from the REDCap bookmarks menu.';
   
-  if(empty($_POST['authkey'])) {
-    $lgl_warning = true;
+//   if(empty($_POST['authkey'])) {
+//     $lgl_warning = true;
   
-  } else {
-    $arr_user = fn_rc_validate_authkey($arr_config[$chr_pr_pid]['redcap-uri'], $_POST['authkey']);
+//   } else {
+//     $arr_user = fn_rc_validate_authkey($arr_config[$chr_pr_pid]['redcap-uri'], $_POST['authkey']);
  
-    if(is_null( $arr_user) or !array_key_exists('username', $arr_user))
-      $lgl_warning = true;
-  }
+//     if(is_null( $arr_user) or !array_key_exists('username', $arr_user))
+//       $lgl_warning = true;
+//   }
 
-  if (!$lgl_warning)
-    $chr_pr_staff = $arr_user['username'];
-} 
+//   if (!$lgl_warning)
+//     $chr_pr_staff = $arr_user['username'];
+// } 
 
 ?>
 
@@ -101,8 +104,8 @@ if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
         const dat_start = dayjs($('#start').val());
         const dat_end = dayjs($('#end').val());
 
-        if (!chr_subject.match(/^[A-Z\d]{5}$/)) {
-          $('#help-subject').text('Subject ID must be 5 character alphanumeric.').show();
+        if (chr_subject.length < 1) {
+          $('#help-subject').text('Subject ID is required.').show();
           return false;
         } else {
           $('#help-subject').hide();

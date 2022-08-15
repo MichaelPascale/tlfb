@@ -25,7 +25,8 @@
           </div>
         </article>
 
-        <p><a id="summary-download">Click here to download the raw data.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
+        <p><a id="summary-download-csv">Click here to download in CSV format.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
+        <p><a id="summary-download-json">Click here to download in JSON format (OLD).</a></p>
 
         <table class="table">
           <thead>

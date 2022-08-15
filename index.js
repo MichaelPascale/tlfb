@@ -11,7 +11,7 @@ var SUBSTANCE_CAT = null;       // List of substance categories.
 // var DATE_90 = dayjs().startOf('day');       // 90 days ago.
 var SELECTED_SUBS = [];         // Substances selected in the substance list.
 var DAYS = DEFAULT_DAYS;
-var DOWNLOAD = null;
+var DOWNLOAD_JSON = null;
 
 // Helper function. Return a substance object given its label.
 function lookup_substance(label) {
@@ -487,7 +487,7 @@ $(document).ready(function () {
         let events = CAL.getEvents();
 
         // Prep a downloadable JSON.
-        DOWNLOAD = JSON.stringify({
+        DOWNLOAD_JSON = JSON.stringify({
             subject: SECONDARY_ID,
             event: PARAMS.get('event'),
             pid: PARAMS.get('pid'),
@@ -507,14 +507,65 @@ $(document).ready(function () {
                 occasions: x?.extendedProps?.occasions,
                 amount: x?.extendedProps.amount,
                 units: x?.extendedProps.units ?? x?.extendedProps.unitsOther,
-		notes: x?.extendedProps.notes
+		        notes: x?.extendedProps.notes
             }))
         });
-        let file = new Blob([DOWNLOAD], {type: 'text/json'});
-        let link = $('#summary-download')[0];
+        let file = new Blob([DOWNLOAD_JSON], {type: 'text/json'});
+        let link = $('#summary-download-json')[0];
         link.href = URL.createObjectURL(file);
         link.download = `TLFB-${PARAMS.get('pid')}-${PARAMS.get('subject')}-${PARAMS.get('event')}-${PARAMS.get('start')}-${PARAMS.get('end')}.json`;
-        $('#summary-summary').text(DOWNLOAD);
+        $('#summary-summary').text(DOWNLOAD_JSON);
+
+        
+        let id_field = 'subject';
+        let id_value = SECONDARY_ID;
+
+        const event_field = 'redcap_event_name';
+        const event_value = PARAMS.get('event');
+
+        const instance_field = 'redcap_repeat_instance';
+        const instrument_field = 'redcap_repeat_instrument';
+        let instrument_value = 'tlfb';
+        const datetime = dayjs().toISOString();
+
+        if (PARAMS.get('record') != null && PARAMS.get('event') != null) {
+            id_field = PARAMS.get('keyfield') == null ? KEY_FIELD : PARAMS.get('keyfield');
+            id_value = PARAMS.get('record');
+            instrument_value = PARAMS.get('instrument') == null? INSTRUMENT : PARAMS.get('instrument');
+        }
+
+        // Prepare CSV Download (for REDCap import)
+        DOWNLOAD_CSV = CAL.getEvents().reduce((acc, cur, idx) => (
+            acc + '"' +
+                id_value + '","' +
+                event_value + '","' +
+                instrument_value + '","' +
+                (idx + 1) + '","' +
+                datetime + '","' +
+                cur?.title + '","',
+                cur?.extendedProps?.type + '","' +
+                (cur.start ? dayjs(cur.start).format('YYYY-MM-DD') : undefined) + '","' +
+                (cur.end ? dayjs(cur.end).format('YYYY-MM-DD') : undefined) + '","' +
+                cur?.extendedProps?.category + '","' +
+                cur?.extendedProps?.substance + '","' +
+                cur?.extendedProps?.occasions + '","' +
+                cur?.extendedProps.amount + '","' +
+                (cur?.extendedProps.units ?? cur?.extendedProps.unitsOther) + '","' +
+                cur?.extendedProps.notes + '"\n'
+        ), ('"' +   id_field + '","' +
+                    event_field + '","' +
+                    instrument_field + '","' +
+                    instance_field  + 
+                    '",tflb_instr_datetime,tlfb_event_title,tlfb_event_type,' + 
+                      'tlfb_event_start,tlfb_event_end,tlfb_event_category,' +
+                      'tlfb_event_substance,tlfb_event_occasions,' +
+                      'tlfb_event_amount,tlfb_event_units,tlfb_event_notes\n'));
+
+        file = new Blob([DOWNLOAD_CSV], {type: 'text/json'});
+        link = $('#summary-download-csv')[0];
+        link.href = URL.createObjectURL(file);
+        link.download = `TLFB-${PARAMS.get('pid')}-${PARAMS.get('subject')}-${PARAMS.get('event')}-${PARAMS.get('start')}-${PARAMS.get('end')}.csv`;
+        $('#summary-summary').text(DOWNLOAD_CSV);
 
         const substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');
         const weeks = DAYS / 7;
@@ -565,7 +616,7 @@ $(document).ready(function () {
         
         $.post('save.php', {
             pid: PARAMS.get('pid'),
-            json: DOWNLOAD
+            json: DOWNLOAD_JSON
         }, function (data) {
             $('#save-summary').attr('disabled', true).addClass('is-success').text('Saved');
             $('#close-summary').remove();

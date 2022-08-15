@@ -35,6 +35,19 @@ require_once 'php/redcap.php';
     const DEFAULT_DAYS = "<?php echo $arr_config[$_GET['pid']]['days']; ?>";
     var DATE_FROM = dayjs("<?php echo $_GET['start']; ?>");
     var DATE_TO = dayjs("<?php echo $_GET['end']; ?>");
+    var KEY_FIELD = "<?php
+      if (isset($arr_config[$_GET['pid']]['keyfield']))
+        echo $arr_config[$_GET['pid']]['keyfield'];
+      else
+        echo 'record_id';
+    ?>";
+    var INSTRUMENT = "<?php
+      if (isset($arr_config[$_GET['pid']]['instrument']))
+        echo $arr_config[$_GET['pid']]['instrument'];
+      else
+        echo 'tlfb';
+    ?>";
+
   </script>
   <script src="calculate.js"></script>
   <script src="index.js"></script>

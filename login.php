@@ -16,6 +16,9 @@ $chr_pr_end     = null;
 $chr_pr_staff   = null;
 $chr_pr_keyfield = null;
 
+$lgl_warning = false;
+$chr_warning = '';
+
 // REDCap Project
 if(!empty($_GET['pid'])) {
   $chr_pr_pid = $_GET['pid'];
@@ -49,17 +52,20 @@ if(!empty($_GET['start'])) $chr_pr_start = $_GET['start'];
 // If a REDCap project, validate authkey.
 if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
 
-  $chr_warn = 'Could not validate user credentials against REDCap database. Ensure the application is accessed from the REDCap bookmarks menu.';
+  $chr_warning = 'Unable to verify user against REDCap database. Ensure the application is accessed from the REDCap bookmarks menu.';
   
-  if(empty($_POST['authkey']))
-    throw new Exception($chr_warn);
+  if(empty($_POST['authkey'])) {
+    $lgl_warning = true;
   
-  $arr_user = fn_rc_validate_authkey($arr_config[$chr_pr_pid]['redcap-uri'], $_POST['authkey']);
+  } else {
+    $arr_user = fn_rc_validate_authkey($arr_config[$chr_pr_pid]['redcap-uri'], $_POST['authkey']);
+ 
+    if(is_null( $arr_user) or !array_key_exists('username', $arr_user))
+      $lgl_warning = true;
+  }
 
-  if(is_null( $arr_user) or !array_key_exists('username', $arr_user))
-    throw new Exception($chr_warn);
-
-  $chr_pr_staff = $arr_user['username'];
+  if (!$lgl_warning)
+    $chr_pr_staff = $arr_user['username'];
 } 
 
 ?>
@@ -176,6 +182,15 @@ if(array_key_exists('redcap-uri', $arr_config[$chr_pr_pid])) {
 <body>
     <div id="application">
     <div id="login" class="is-flex-grow-1 is-clipped">
+        <?php if ($lgl_warning) { ?>
+          <article id="login-warning" class="message is-warning">
+            <div class="message-body">
+              <p id="login-warning-message">
+                <?php echo $chr_warning; ?>
+              </p>
+            </div>
+          </article>
+        <?php } ?>
         <div class="is-flex is-flex-direction-column is-justify-content-space-around is-overlay" style="position: absolute;">
             <div class="card mx-auto">
                 <header class="card-header">

@@ -4,7 +4,7 @@ if (empty($_GET) or !isset($_GET['subject'], $_GET['event'], $_GET['start'], $_G
   header("Location: login.php?$chr_query");
 }
 
-$arr_config     = yaml_parse_file('config.yml');
+$arr_config     = parse_ini_file('config.ini', true);
 
 require_once 'vendor/autoload.php';
 require_once 'php/util.php';

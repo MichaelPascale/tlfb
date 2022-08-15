@@ -5,7 +5,7 @@ require_once 'php/util.php';
 
 ob_start();
 
-$arr_config     = yaml_parse_file('config.yml');
+$arr_config     = parse_ini_file('config.ini', true);
 
 $chr_pr_pid     = 'default';
 $chr_pr_event   = null;

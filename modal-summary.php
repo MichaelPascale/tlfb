@@ -17,13 +17,15 @@
       </article>
       <div id="summary" class="content">
 
+      <?php if (!$arr_config['save']) {?>
       <article id="summary-warning" class="message is-warning">
           <div class="message-body">
             <p id="summary-warning-message">
-              REDCap integration is temporarily disabled. Please <b>downlod the raw data file</b>. Backup copies of Data will continue to be saved to the server.
+              Ensure all final data is downloaded and copied to the appropriate location. No backup copies will be saved.
             </p>
           </div>
         </article>
+        <?php }?>
 
         <p><a id="summary-download-csv">Click here to download in CSV format.</a> This should be saved as a backup for all participants. Once the data has been saved, click "Submit to REDCap". Scores will be calculated upon submission.</p>
         <p><a id="summary-download-json">Click here to download in JSON format (OLD).</a></p>
@@ -63,7 +65,7 @@
     </section>
 
     <footer class="modal-card-foot">
-      <button id="save-summary" class="button is-link is-fullwidth">Save Data</button>
+      <button id="save-summary" class="button is-link is-fullwidth" <?php if (!$arr_config['save']) echo 'disabled'; ?>>Save Data</button>
     </footer>
 
   </div>

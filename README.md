@@ -20,37 +20,22 @@ A REDCap database must have scoring instrument to store the summarized results o
 
 ## Configuration
 
-This project makes use of [composer](https://getcomposer.org/) to manage PHP dependencies. Run `composer install` to install dependencies to `vendor/`.
-
-Create a `config.ini` in the top level directory with the following contents for each project.
+Create a `config.ini` in the top level directory with the following contents.
 ```ini
-[40165] # REDCAP Project ID
-redcap[uri]='https://redcap.example.org/redcap/api/'
-redcap[key]='Y3L1AZNBLS4TBUQLLFR5I5632M1HP5DN'
-redcap[arm]=1
+save=true                       # Whether to save a backup copy of data on the server.
 
-# The event in which to look for subject-level data.
-events[screen]='screening_visit_arm_1' 
+[default]                       # Default settings for when no REDCap project is specified.
+name="Default Configuration"    # Project name.
+days=30                         # The number of days that should be visible by default.
+events[v0]="Baseline Visit"     # Map each REDCap event (e.g. v0) to a user friendly name to appear in the dropdown.
 
-# Record of the study visit.
-forms[visit]='visitstart'   
-# Timeline follow-back instrument.
-forms[tlfb]='tlfb_scoring_module'
-
-# Study ID field.
-fields[secondary_id]='visitstart_studyid'
-# Date-of-Birth field.
-fields[dob]='dob'
-# Date of the study visit.
-fields[start]='visitstart_starttime'
-# Whether the participant showed up for the visit.
-fields[show]='visitstart_ptshowed'
-
-# Date of the timeline follow-back completion.
-fields[tlfb_date]='tlfb_date'
-
-# The default number of days to look back.
-timeline[days]=90
+# For each REDCap Project...
+[38762]                         # The REDCap PID.
+name="Vaping Study"
+days=90
+events[v0_screening_arm_2]="Visit 0 / Screening Visit"
+events[v1_baseline_arm_2]="Visit 1 / Baseline Visit"
+events[v2_4wk_arm_2]="Visit 2 / 4 Weeks"
 ```
 
 Also present should be a `substances.json`.

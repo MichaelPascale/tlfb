@@ -612,6 +612,13 @@ $(document).ready(function () {
     });
 
     $('#save-summary').click(function () {
+        if (!ENABLE_SAVE) {
+            $('#summary-error-message').text('Save is disabled.');
+            $('#summary-error').removeClass('is-hidden');
+            $('#summary').scrollTop(0);
+            return;
+        }
+
         $('#loading').addClass('is-active');
         
         $.post('save.php', {

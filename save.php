@@ -1,12 +1,14 @@
 <?php 
 
 require_once 'php/util.php';
-require_once 'php/redcap.php';
 //require_once 'auth.php';
 
 $config = parse_ini_file('config.ini', true);
 
 try {
+
+    if (!$config['save'])
+        throw new Exception("Save has been disabled.");
 
     if (empty($_POST))
          throw new Exception('No arguments provided.');

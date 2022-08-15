@@ -6,10 +6,8 @@ if (empty($_GET) or !isset($_GET['subject'], $_GET['event'], $_GET['start'], $_G
 
 $arr_config     = parse_ini_file('config.ini', true);
 
-require_once 'vendor/autoload.php';
 require_once 'php/util.php';
 require_once 'php/errors.php';
-require_once 'php/redcap.php';
 
 ?>
 
@@ -47,6 +45,7 @@ require_once 'php/redcap.php';
       else
         echo 'tlfb';
     ?>";
+    const ENABLE_SAVE = <?php echo $arr_config['save'] ? 'true' : 'false'; ?>;
 
   </script>
   <script src="calculate.js"></script>
@@ -94,8 +93,10 @@ require_once 'php/redcap.php';
           </div>
 
 
-        <div class="level-item control">
-          <button class="button" id="open-upload">Import Data</button>
+        <div class="level-item field has-addons">
+          <div class="control"><div class="button is-static">Import Data</div></div>
+          <div class="control"><button class="button" id="open-upload">JSON</button></div>
+          <div class="control"><button class="button" id="open-upload-csv" disabled>CSV</button></div>
         </div>
 
       </div>

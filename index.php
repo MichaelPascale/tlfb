@@ -24,9 +24,12 @@ require_once 'php/errors.php';
   <script src="lib/dayjs-1.10.6.min.js"></script>
   <script src="lib/dayjs-duration-1.10.6.min.js"></script>
   <script src="lib/dayjs-customParseFormat-1.10.6.min.js"></script>
+  <script src="lib/rrule-2.7.1.min.js"></script>
   <script src="lib/fullcalendar-5.8.0.js"></script>
+  <script src="lib/fullcalendar-rrule-5.8.0.js"></script>
   <script src="lib/jquery-3.6.0.min.js"></script>
   <script>
+    const DEBUG = <?php echo $arr_config['debug'] ? 'true' : 'false' ?>;
     const EVENT_NAME = "<?php echo $_GET['event']; ?>";
     const SECONDARY_ID = "<?php echo $_GET['subject']; ?>";
     const LAST_VISIT = "<?php echo $_GET['start']; ?>";
@@ -85,12 +88,13 @@ require_once 'php/errors.php';
         </div>
 
 
-          <div class="level-item control">
-            <button class="button" id="mode-key-event">Add Key Dates</button>
-          </div>
-          <div class="level-item control">
-            <button class="button" id="mode-substance-event">Add Substance Use Events</button>
-          </div>
+        <div class="level-item field has-addons mb-0">
+          <div class="control"><div class="button is-static">Mode</div></div>
+          <div class="control"><button class="button" id="mode-key-event">Add Key Dates</button></div>
+          <div class="control"><button class="button" id="mode-substance-event">Add Substance Events</button></div>
+          <div class="control"><button class="button" id="mode-copy-event">Copy Events</button></div>
+          <div class="control"><button class="button" id="mode-delete-event">Delete Events</button></div>
+        </div>
 
 
         <div class="level-item field has-addons">
@@ -106,10 +110,15 @@ require_once 'php/errors.php';
       </div>
     </div>
 
+    <?php if ($arr_config['debug']) { ?>
+      <details>
+        <summary>Debugging Information</summary>
+        <pre>Mode: <span id="debug-mode"></span></pre>
+      </details>
+    <?php } ?>
+
     <div id="calendar"></div>
   </section>
-
-  <p id="debug"></p>
 
   <?php include 'modal-summary.php'; ?>
   <?php include 'modal-substance-list.php'; ?>

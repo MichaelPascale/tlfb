@@ -1,7 +1,8 @@
 // Define Globals
 // EVENT_NAME, SECONDARY_ID, LAST_VISIT defined in index.php.
 const PARAMS = new URLSearchParams(window.location.search);
-var MODE = '';                  // Event-adding mode (substance event or key date).
+var MODE = '';                  // Event-adding mode (substance event, key date, or copy event).
+const WEEKDAYS = [rrule.RRule.SU, rrule.RRule.MO, rrule.RRule.TU, rrule.RRule.WE, rrule.RRule.TH, rrule.RRule.FR, rrule.RRule.SA];
 var CAL = null;                 // The FullCalendar object.
 var CUR_EVT = '';               // The calendar date currently being edited.
 var SUBSTANCES = null;          // List of substances.
@@ -12,6 +13,7 @@ var SUBSTANCE_CAT = null;       // List of substance categories.
 var SELECTED_SUBS = [];         // Substances selected in the substance list.
 var DAYS = DEFAULT_DAYS;
 var DOWNLOAD_JSON = null;
+var COPY_BUFFER = null;
 
 // Helper function. Return a substance object given its label.
 function lookup_substance(label) {
@@ -70,36 +72,53 @@ function dateSelect (ev){
         $('#remove-key-event').addClass('is-hidden');
 
     }
+
+    // TODO: ADD COPY MODE FOR SUBSTANCE EVENTS.
+    if (MODE == 'copy-event') {
+
+    }
 };
 
 // Set event handler for when user clicks an existing event.
 function eventClick (ev){
     CUR_EVT = ev.event;
+    if (MODE == 'copy-event') {
+        console.log('copying', CUR_EVT);
+        COPY_BUFFER = CUR_EVT;
+        // TODO: IMPLEMENT COPY.
+    } else if (MODE == 'delete-event') {
+        CUR_EVT.remove();
+    } else {
+        switch (CUR_EVT.extendedProps.tlfb.type) {
 
-    switch (CUR_EVT.extendedProps.type) {
-    case 'substance-event':
-        update_substance_options();
-        $('#substance-event-date').text(CUR_EVT.start.toDateString());
-        $('#form-substance-event')[0].reset(); // Trigger a change event to update unit list.
-        $('#substance-event-substance').val(CUR_EVT.extendedProps.substance).trigger('change');
-        $('#substance-event-occasions').val(CUR_EVT.extendedProps.occasions);
-        $('#substance-event-amount').val(CUR_EVT.extendedProps.amount);
-        $('#substance-event-units').val(CUR_EVT.extendedProps.units);
-        $('#substance-event-units-other').val(CUR_EVT.extendedProps.unitsOther);
-        $('#substance-event-notes').val(CUR_EVT.extendedProps.notes);
-        // $('#substance-event-recurring').prop('disabled', true);
-        $('#substance-event-recur-until').prop('min', CUR_EVT.start.toISOString().substr(0,10));
-        $('#substance-event-recur-until').prop('max', DATE_TO.toISOString().substr(0,10));
-        $('#modal-substance-event').addClass('is-active');
-        $('#remove-substance-event').removeClass('is-hidden');
-        break;
-    case 'key-event':
-        $('#key-event-date').text(CUR_EVT.start.toDateString());
-        $('#form-key-event')[0].reset();
-        $('#key-event-text').val(CUR_EVT.title);
-        $('#modal-key-event').addClass('is-active');
-        $('#remove-key-event').removeClass('is-hidden');
-        break;
+        case 'substance-event':
+            update_substance_options();
+            $('#substance-event-date').text(CUR_EVT.start.toDateString());
+            $('#form-substance-event')[0].reset(); // Trigger a change event to update unit list.
+            $('#substance-event-substance').val(CUR_EVT.extendedProps.tlfb.substance).trigger('change');
+            $('#substance-event-occasions').val(CUR_EVT.extendedProps.tlfb.occasions);
+            $('#substance-event-amount').val(CUR_EVT.extendedProps.tlfb.amount);
+            $('#substance-event-units').val(CUR_EVT.extendedProps.tlfb.units);
+            $('#substance-event-units-other').val(CUR_EVT.extendedProps.tlfb.unitsOther);
+            $('#substance-event-notes').val(CUR_EVT.extendedProps.tlfb.notes);
+            $('#substance-event-recurring').prop('checked', CUR_EVT.extendedProps.tlfb.recurring).change();
+            if (CUR_EVT.extendedProps.tlfb.recurring) {
+                $('#substance-event-recur-until').val(CUR_EVT.extendedProps.tlfb.until);
+                $('#substance-event-recur-on').val(CUR_EVT.extendedProps.tlfb.weekdays);
+            }
+            $('#substance-event-recur-until').prop('min', CUR_EVT.start.toISOString().substr(0,10));
+            $('#substance-event-recur-until').prop('max', DATE_TO.toISOString().substr(0,10));
+            $('#modal-substance-event').addClass('is-active');
+            $('#remove-substance-event').removeClass('is-hidden');
+            break;
+        case 'key-event':
+            $('#key-event-date').text(CUR_EVT.start.toDateString());
+            $('#form-key-event')[0].reset();
+            $('#key-event-text').val(CUR_EVT.title);
+            $('#modal-key-event').addClass('is-active');
+            $('#remove-key-event').removeClass('is-hidden');
+            break;
+        }
     }
 };
 
@@ -170,7 +189,8 @@ $(document).ready(function () {
     // Update the clock every second.
     const fn_clock = function () {
         $('#time').text(`Today is ${dayjs().format('dddd, MMM DD YYYY')}`);
-        setTimeout(fn_clock, 60000)
+        $('#debug-mode').text(MODE);
+        setTimeout(fn_clock, 1000)
     }
     fn_clock();
 
@@ -232,14 +252,18 @@ $(document).ready(function () {
             let recurUntil = $('#substance-event-recur-until').val();
 
             if (CUR_EVT instanceof FullCalendar.EventApi) {
-                CUR_EVT.setExtendedProp('substance', subs);
-                CUR_EVT.setExtendedProp('category', sub.cat);
-                CUR_EVT.setExtendedProp('occasions', occas);
-                CUR_EVT.setExtendedProp('amount', amnt);
-                CUR_EVT.setExtendedProp('units', units);
-                CUR_EVT.setExtendedProp('unitsOther', unitsOther);
-                CUR_EVT.setExtendedProp('notes', notes);
+                CUR_EVT.setExtendedProp('tlfb', {
+                    substance: subs,
+                    category: sub.cat,
+                    occasions: occas,
+                    amount: amnt,
+                    units: units,
+                    unitsOther: unitsOther,
+                    notes: notes
+                });
                 CUR_EVT.setProp('title',`${subs} ${occas}x ${amnt}${units || unitsOther}`);
+
+                // FIXME: USES FULLCALENDAR RECURRENCE, NOT RRULE.
                 if (recur) {
                     CUR_EVT.setProp('daysOfWeek', recurOn);
                     CUR_EVT.setProp('startRecur', CUR_EVT.start);
@@ -247,24 +271,44 @@ $(document).ready(function () {
                 }
                 
             } else {
-                CUR_EVT.type = 'substance-event';
-                CUR_EVT.substance = subs;
-                CUR_EVT.category  = sub.cat;
-                CUR_EVT.occasions = occas;
-                CUR_EVT.amount = amnt;
-                CUR_EVT.units = units;
-                CUR_EVT.unitsOther = unitsOther;
-                CUR_EVT.notes = notes;
+                CUR_EVT.tlfb = {
+                    type:       'substance-event',
+                    recurring:  false,
+                    substance:  subs,
+                    category :  sub.cat,
+                    occasions:  occas,
+                    amount:     amnt,
+                    units:      units,
+                    unitsOther: unitsOther,
+                    notes:      notes
+                }
                 CUR_EVT.title = `${subs} ${occas}x ${amnt}${units || unitsOther}`;
                 CUR_EVT.textColor = '#FFFFFF';
                 CUR_EVT.backgroundColor = '#785EF0';
                 CUR_EVT.borderColor = '#785EF0';
                 if (recur) {
-                    CUR_EVT.daysOfWeek = recurOn;
-                    CUR_EVT.startRecur = CUR_EVT.date;
-                    CUR_EVT.endRecur = recurUntil;
                     CUR_EVT.backgroundColor = '#8060F2';
                     CUR_EVT.borderColor = '#8060F2';
+                    console.log(recurOn);
+
+                    CUR_EVT.tlfb.recurring = true;
+
+                    CUR_EVT.rrule ={
+                        freq: rrule.RRule.WEEKLY,
+                        interval: 1,
+                        dtstart: new Date(CUR_EVT.date),
+                        until: new Date(recurUntil),
+                        byweekday: recurOn.map(i => WEEKDAYS[i])
+                    };
+
+                    CUR_EVT.tlfb.recurrence = new rrule.RRule(CUR_EVT.rrule).toString();
+                    CUR_EVT.tlfb.until = recurUntil;
+                    CUR_EVT.tlfb.weekdays = recurOn;
+                    CUR_EVT.tlfb.exceptions = [];
+
+                    console.log(CUR_EVT.rrule);
+                    console.log(CUR_EVT.tlfb.recurrence);
+                    console.log(CUR_EVT.tlfb.exceptions);
                 }
                 CAL.addEvent(CUR_EVT);
             }
@@ -466,6 +510,8 @@ $(document).ready(function () {
     $('#mode-substance-event').click(function () {
         $('#mode-substance-event').addClass('is-success').attr('disabled', true);
         $('#mode-key-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-copy-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-delete-event').removeClass('is-success').attr('disabled', false);
         CAL.setOption('selectable', false);
         MODE = 'substance-event';
     });
@@ -473,8 +519,29 @@ $(document).ready(function () {
     $('#mode-key-event').click(function () {
         $('#mode-key-event').addClass('is-success').attr('disabled', true);
         $('#mode-substance-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-copy-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-delete-event').removeClass('is-success').attr('disabled', false);
         CAL.setOption('selectable', true);
         MODE = 'key-event';
+    });
+
+    $('#mode-copy-event').click(function () {
+        COPY_BUFFER = null;
+        $('#mode-copy-event').addClass('is-success').attr('disabled', true);
+        $('#mode-key-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-substance-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-delete-event').removeClass('is-success').attr('disabled', false);
+        CAL.setOption('selectable', true); // TODO: Allow selectable?
+        MODE = 'copy-event';
+    });
+
+    $('#mode-delete-event').click(function () {
+        $('#mode-delete-event').addClass('is-success').attr('disabled', true);
+        $('#mode-key-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-substance-event').removeClass('is-success').attr('disabled', false);
+        $('#mode-copy-event').removeClass('is-success').attr('disabled', false);
+        CAL.setOption('selectable', false); // TODO: Allow selectable?
+        MODE = 'delete-event';
     });
 
     // Set summary screen event handlers.
@@ -499,15 +566,15 @@ $(document).ready(function () {
             datetime: dayjs().toISOString(),
             events: CAL.getEvents().map(x => ({
                 title: x?.title,
-                type: x?.extendedProps?.type,
+                type: x?.extendedProps?.tlfb?.type,
                 start: x.start ? dayjs(x.start).format('YYYY-MM-DD') : undefined,
                 end: x.end ? dayjs(x.end).format('YYYY-MM-DD') : undefined,
-                category: x?.extendedProps?.category,
-                substance: x?.extendedProps?.substance,
-                occasions: x?.extendedProps?.occasions,
-                amount: x?.extendedProps.amount,
-                units: x?.extendedProps.units ?? x?.extendedProps.unitsOther,
-		        notes: x?.extendedProps.notes
+                category: x?.extendedProps?.tlfb?.category,
+                substance: x?.extendedProps?.tlfb?.substance,
+                occasions: x?.extendedProps?.tlfb?.occasions,
+                amount: x?.extendedProps?.tlfb?.amount,
+                units: x?.extendedProps?.tlfb?.units ?? x?.extendedProps?.tlfb?.unitsOther,
+		        notes: x?.extendedProps?.tlfb?.notes
             }))
         });
         let file = new Blob([DOWNLOAD_JSON], {type: 'text/json'});
@@ -543,15 +610,15 @@ $(document).ready(function () {
                 (idx + 1) + '","' +
                 datetime + '","' +
                 cur?.title + '","',
-                cur?.extendedProps?.type + '","' +
+                cur?.extendedProps?.tlfb?.type + '","' +
                 (cur.start ? dayjs(cur.start).format('YYYY-MM-DD') : undefined) + '","' +
                 (cur.end ? dayjs(cur.end).format('YYYY-MM-DD') : undefined) + '","' +
-                cur?.extendedProps?.category + '","' +
-                cur?.extendedProps?.substance + '","' +
-                cur?.extendedProps?.occasions + '","' +
-                cur?.extendedProps.amount + '","' +
-                (cur?.extendedProps.units ?? cur?.extendedProps.unitsOther) + '","' +
-                cur?.extendedProps.notes + '"\n'
+                cur?.extendedProps?.tlfb?.category + '","' +
+                cur?.extendedProps?.tlfb?.substance + '","' +
+                cur?.extendedProps?.tlfb?.occasions + '","' +
+                cur?.extendedProps?.tlfb?.amount + '","' +
+                (cur?.extendedProps?.tlfb?.units ?? cur?.extendedProps?.tlfb?.unitsOther) + '","' +
+                cur?.extendedProps?.tlfb?.notes + '"\n'
         ), ('"' +   id_field + '","' +
                     event_field + '","' +
                     instrument_field + '","' +
@@ -567,7 +634,7 @@ $(document).ready(function () {
         link.download = `TLFB-${PARAMS.get('pid')}-${PARAMS.get('subject')}-${PARAMS.get('event')}-${PARAMS.get('start')}-${PARAMS.get('end')}.csv`;
         $('#summary-summary').text(DOWNLOAD_CSV);
 
-        const substance_events = events.filter(x=>x.extendedProps.type == 'substance-event');
+        const substance_events = events.filter(x=>x.extendedProps?.tlfb?.type == 'substance-event');
         const weeks = DAYS / 7;
 
         // Total number of days each substance was used.

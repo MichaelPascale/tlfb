@@ -8,12 +8,15 @@ The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Met
 Download the following libraries. Rename accordingly and place the files under `lib/`.
 
 - `bulma-0.9.2.min.css`
+- `materialdesignicons-6.5.95.min.css`
 - `fullcalendar-5.8.0.css`
 - `fullcalendar-5.8.0.js`
+- `fullcalendar-rrule-5.8.0.js` (plugin)
 - `jquery-3.6.0.min.js`
 - `dayjs-1.10.6.min.js`
 - `dayjs-duration-1.10.6.min.js` (plugin)
 - `dayjs-customParseFormat-1.10.6.min.js` (plugin)
+- `rrule-2.7.1.min.js`
 
 A REDCap database must have scoring instrument to store the summarized results of the timeline follow-back. Upload `instrument.csv` to your database.
 
@@ -23,6 +26,7 @@ A REDCap database must have scoring instrument to store the summarized results o
 Create a `config.ini` in the top level directory with the following contents.
 ```ini
 save=true                       # Whether to save a backup copy of data on the server.
+debug=false                     # Whether to display debugging information on the calendar.
 
 [default]                       # Default settings for when no REDCap project is specified.
 name="Default Configuration"    # Project name.

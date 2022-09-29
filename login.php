@@ -80,8 +80,8 @@ if(!empty($_GET['username'])) $chr_pr_staff = $_GET['username'];
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Timeline-Followback</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="lib/bulma-0.9.2.min.css">
+    <link rel="stylesheet" href="lib/materialdesignicons-6.5.95.min.css">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="lib/dayjs-1.10.6.min.js"></script>
     <script src="lib/dayjs-duration-1.10.6.min.js"></script>

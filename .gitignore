@@ -5,3 +5,4 @@ composer.lock
 substances.json
 studies.json
 *.ini
+node_modules/

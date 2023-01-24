@@ -1,18 +1,82 @@
-interface CalendarEvent {
-    // Event ID
-    // A unique identifier for the event.
-    eid: number;
-    // Group ID.
-    // Events are grouped if they belong to the same recurrence.
-    gid: number;
-    // Event type.
-    // The Timeline Follow-back allows for "key events" and substance use events.
-    type: 'key' | 'sub';
-    // Date of the event.
-    date: Date;
-    // Is the event recurring?
-    recur: Boolean;
-};
+/* events.ts
+ * Manage calendar events separately from the calendar UI.
+ *
+ * Authored by Michael Pascale <mppascale@mgh.harvard.edu>.
+ * Last modified: 2023-01-24
+ */
+// interface CalendarEvent {
+//     // Event ID
+//     // A unique identifier for the event.
+//     eid: number;
+//     // Group ID.
+//     // Events are grouped if they belong to the same recurrence.
+//     gid: number;
+//     // Event type.
+//     type: string;
+//     // Date of the event.
+//     date: Date;
+//     // Is the event recurring?
+//     recur: Boolean;
+// };
+
+
+// interface KeyEvent extends CalendarEvent {
+//     type: 'key';
+//     title: string;
+// }
+
+// interface UseEvent extends CalendarEvent {
+//     type: 'sub';
+//     title: string;
+// }
+
+type EventType = 'key' | 'use' | null;
+type EventIdentifier = number | null;
+
+
+class CalendarEvent {
+
+    private _eid: EventIdentifier = null;
+    private _gid: EventIdentifier = null;
+    private _date: Date;
+    protected _type: EventType = null;
+
+    // Constructor iis protected such that a CalendarEvent can only be
+    // instantiated under a derived class.
+    protected constructor(date: Date, type: EventType) {
+        this._date = date;
+        this._type = type;
+    }
+
+    public set_eid(eid: number) {
+        this._eid = eid;
+        return this;
+    }
+
+    public set_gid(gid: number) {
+        this._gid = gid;
+        return this;
+    }
+}
+
+class KeyEvent extends CalendarEvent {
+    private _title: string;
+
+    public constructor(date: Date, title: string) {
+        super(date, 'key');
+        this._title = title;
+    }
+}
+
+class UseEvent extends CalendarEvent {
+    private _title: string;
+
+    public constructor(date: Date, title: string) {
+        super(date, 'key');
+        this._title = title;
+    }
+}
+
 
 // A CalendarEvents object stores an array of calendar events and provides
 // a safe interface through which they can be accessed and updated.
@@ -94,6 +158,18 @@ class CalendarEvents {
         
         return this;
     }
+
+    public serialize_events(as: 'csv' | 'json') {
+        switch (as) {
+            case 'csv':
+                alert('CalendarEvents.serialize_events(\'csv\'): Not implemented.')
+                break;
+
+            case 'json':
+                alert('CalendarEvents.serialize_events(\'json\'): Not implemented.')
+                break;
+        }
+    };
 };
 
 

@@ -77,6 +77,10 @@ class CalendarDate {
     public get next_day() {
         return new CalendarDate(this.toString()).set_day(this.day + 1);
     }
+
+    public get previous_day() {
+        return new CalendarDate(this.toString()).set_day(this.day - 1);
+    }
 }
 
 abstract class CalendarEvent {
@@ -203,7 +207,6 @@ class UseEvent extends CalendarEvent {
     }
 }
 
-
 // A CalendarEvents object stores an array of calendar events and provides
 // a safe interface through which they can be accessed and updated.
 class CalendarEventList {
@@ -270,7 +273,6 @@ class CalendarEventList {
                     
                 return acc;
             }, new Map());
-
 
         this._events = 
             this._events.concat(events.map((event: CalendarEvent) => {

@@ -30,6 +30,7 @@
     "@fullcalendar/core": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/rrule": "^5.11.3",
+    "@types/bootstrap": "^5.2.6",
     "browserify": "^17.0.0",
     "bulma": "^0.9.4",
     "dayjs": "^1.11.7",

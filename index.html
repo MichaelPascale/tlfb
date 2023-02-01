@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Timeline Follow-Back</title>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="lib/bootstrap.min.css" />
+  <link rel="stylesheet" href="lib/fullcalendar-5.8.0.css" />
+  <!-- <link rel="stylesheet" href="lib/bulma-0.9.2.min.css" /> -->
+  <!-- <link rel="stylesheet" href="css/loading.css" /> -->
+  <!-- <script src="lib/dayjs-1.10.6.min.js"></script> -->
+  <!-- <script src="lib/dayjs-duration-1.10.6.min.js"></script> -->
+  <!-- <script src="lib/dayjs-customParseFormat-1.10.6.min.js"></script> -->
+  <!-- <script src="lib/rrule-2.7.1.min.js"></script> -->
+  <script src="lib/fullcalendar-5.8.0.js"></script>
+  <!-- <script src="lib/fullcalendar-rrule-5.8.0.js"></script> -->
+  <!-- <script src="lib/jquery-3.6.0.min.js"></script> -->
+  <script src="lib/bootstrap.bundle.min.js"></script>
+  <script src="dist/events.js"></script>
+  <script src="dist/ui.js"></script>
+  <style>
+    /* Sticky footer styles
+    -------------------------------------------------- */
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+
+    body {
+      /* Margin bottom by footer height */
+      margin-bottom: 20px;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+      height: 20px;
+      line-height: 20px;
+      /* Vertically center the text there */
+      background-color: #f5f5f5;
+    }
+
+
+    /* Custom page CSS
+    -------------------------------------------------- */
+    /* Not required for template or sticky footer method. */
+
+    body>.container {
+      padding: 60px 15px 0;
+    }
+
+    .footer>.container {
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+
+    code {
+      font-size: 80%;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <header>
+    <nav class="navbar navbar-expand-md fixed-top bg-light">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1" id="title">Timeline-Followback</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar-content">
+          <ul class="navbar-nav mb-2 mb-lg-0 w-100"> <!-- d-flex justify-content-end -->
+
+            <!-- NOTE: click_mode_button expects the navigation dropdowns to have the following DOM structure. -->
+            <li class="nav-item dropdown">
+              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
+                id="mode-dropdown-edit">Edit</button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" id="mode-button-edit-list">Substance List</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
+                id="mode-dropdown-add">Add</button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" id="mode-button-add-key-date">Key Date</a></li>
+                <li><a class="dropdown-item" id="mode-button-add-substance-event">Substance Event</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item"><button type="button" class="btn btn-link" id="mode-button-copy">Copy</button></li>
+            <li class="nav-item"><button type="button" class="btn btn-link" id="mode-button-delete">Delete</button></li>
+
+            <li class="nav-item dropdown">
+              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
+                id="mode-dropdown-import">Import</button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" id="mode-button-import-json">From JSON</a></li>
+                <li><a class="dropdown-item" id="mode-button-import-csv">From CSV</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
+                id="mode-dropdown-export">Export</button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" id="mode-button-export-json">To JSON</a></li>
+                <li><a class="dropdown-item" id="mode-button-export-csv">To CSV</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item"><button type="button" class="btn btn-link" id="mode-button-summarize">Summarize</button></li>
+
+            <li class="nav-item ms-auto">
+              <div class="fw-light text-muted small navbar-text">Timeline Follow-Back v3.0.0.9000</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <!-- End Navigation Bar -->
+
+  <!-- Main Content -->
+  <main role="main" class="container">
+    <h1 class="mt-5">content area</h1>
+    <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML
+      and CSS. A fixed navbar has been added with <code>padding-top: 60px;</code> on the
+      <code>body &gt; .container</code>.
+    </p>
+    <p>Back to <a href="../sticky-footer/">the default sticky footer</a> minus the navbar.</p>
+    <div class="container-fluid">
+
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-confirm-danger">
+        Launch demo modal
+      </button>
+  </main>
+  <!-- END Main Content -->
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <span class="text-muted small">For internal use only. Maintained by Michael Pascale <<a
+          href="mailto:mppascale@mgh.harvard.edu">mppascale@mgh.harvard.edu</a>>. The source code is licensed
+          <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.</span>
+    </div>
+  </footer>
+  <!-- End Footer -->
+
+  <!-- Confirm Dangerous Operation Modal -->
+  <div class="modal fade" id="confirm-danger-modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="confirm-danger-title"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="confirm-danger-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="confirm-danger-cancel"></button>
+          <button type="button" class="btn btn-danger" id="confirm-danger-confirm"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END Confirm Dangerous Operation Modal -->
+
+  <!-- Create Key Event -->
+  <div class="modal fade" id="modal-create-key-event" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Confirm deletion of calendar event(s).</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Units</label>
+            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Notes</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" ,
+              placeholder="e.g. uses juul when at school"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger">Delete the Event(s)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END Create Key Event -->
+</body>
+<script>
+  // Confirm Page Leave
+  addEventListener('beforeunload', function() { return true; });
+  // Use navigation buttons to switch modes.
+  document.querySelectorAll('[id^=mode-button]').forEach(x => x.addEventListener('click', click_mode_button));
+  // There is no mode associated with Summarize or Edit Substance List.
+  document.querySelectorAll('#mode-button-summarize,#mode-button-edit-list').forEach(x => x.addEventListener('click', deactivate_all))
+</script>
+</html>

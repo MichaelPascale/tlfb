@@ -2,208 +2,383 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <title>Timeline Follow-Back</title>
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-  <link rel="stylesheet" href="lib/bootstrap.min.css" />
-  <link rel="stylesheet" href="lib/fullcalendar-5.8.0.css" />
-  <!-- <link rel="stylesheet" href="lib/bulma-0.9.2.min.css" /> -->
-  <!-- <link rel="stylesheet" href="css/loading.css" /> -->
-  <!-- <script src="lib/dayjs-1.10.6.min.js"></script> -->
-  <!-- <script src="lib/dayjs-duration-1.10.6.min.js"></script> -->
-  <!-- <script src="lib/dayjs-customParseFormat-1.10.6.min.js"></script> -->
-  <!-- <script src="lib/rrule-2.7.1.min.js"></script> -->
-  <script src="lib/fullcalendar-5.8.0.js"></script>
-  <!-- <script src="lib/fullcalendar-rrule-5.8.0.js"></script> -->
-  <!-- <script src="lib/jquery-3.6.0.min.js"></script> -->
-  <script src="lib/bootstrap.bundle.min.js"></script>
-  <script src="dist/events.js"></script>
-  <script src="dist/ui.js"></script>
+  <!-- Copyright (c) 2023, Michael Pascale -->
+  <!-- Online Multisubstance Timeline Followback -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timeline Followback</title>
+  <link rel="stylesheet" href="/static/fonts/material-icons.css">
+  <link rel="stylesheet" href="/static/bulma.min.css">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+  <!-- UNCOMMENT THIS LINE WHEN USING WEBPACK SERVE FOR LOCAL DEVELOPMENT -->
+  <script src="/tlfb-v3-bundle.js"></script>
+
+  <!-- USE THIS LINE IN PRODUCTION, COMMENT THIS LINE IN DEVELOPMENT -->
+  <!-- Not sure how to get webpack development server to alias the in-memory bundle under the /static/ path. -->
+  <!-- <script src="/static/tlfb-v3-bundle.js"></script> -->
+
   <style>
-    /* Sticky footer styles
-    -------------------------------------------------- */
-    html {
-      position: relative;
-      min-height: 100%;
+    #application {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    body {
-      /* Margin bottom by footer height */
-      margin-bottom: 20px;
-    }
-
-    .footer {
+    .notification {
       position: absolute;
-      bottom: 0;
-      width: 100%;
-      /* Set the fixed height of the footer here */
-      height: 20px;
-      line-height: 20px;
-      /* Vertically center the text there */
-      background-color: #f5f5f5;
-    }
-
-
-    /* Custom page CSS
-    -------------------------------------------------- */
-    /* Not required for template or sticky footer method. */
-
-    body>.container {
-      padding: 60px 15px 0;
-    }
-
-    .footer>.container {
-      padding-right: 15px;
-      padding-left: 15px;
-    }
-
-    code {
-      font-size: 80%;
+      z-index: 1;
+      padding: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      /* display: none; */
     }
   </style>
 </head>
 
 <body>
-  <!-- Navigation Bar -->
-  <header>
-    <nav class="navbar navbar-expand-md fixed-top bg-light">
-      <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1" id="title">Timeline-Followback</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbar-content">
-          <ul class="navbar-nav mb-2 mb-lg-0 w-100"> <!-- d-flex justify-content-end -->
+  <div id="application">
+    <div id="content" class="is-flex-grow-1">
 
-            <!-- NOTE: click_mode_button expects the navigation dropdowns to have the following DOM structure. -->
-            <li class="nav-item dropdown">
-              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
-                id="mode-dropdown-edit">Edit</button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" id="mode-button-edit-list">Substance List</a></li>
-              </ul>
-            </li>
+      <div id="nav-layout">
 
-            <li class="nav-item dropdown">
-              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
-                id="mode-dropdown-add">Add</button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" id="mode-button-add-key-date">Key Date</a></li>
-                <li><a class="dropdown-item" id="mode-button-add-substance-event">Substance Event</a></li>
-              </ul>
-            </li>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            // Get all "navbar-burger" elements
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
 
-            <li class="nav-item"><button type="button" class="btn btn-link" id="mode-button-copy">Copy</button></li>
-            <li class="nav-item"><button type="button" class="btn btn-link" id="mode-button-delete">Delete</button></li>
+            // Add a click event on each of them
+            $navbarBurgers.forEach(el => {
+              el.addEventListener('click', () => {
 
-            <li class="nav-item dropdown">
-              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
-                id="mode-dropdown-import">Import</button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" id="mode-button-import-json">From JSON</a></li>
-                <li><a class="dropdown-item" id="mode-button-import-csv">From CSV</a></li>
-              </ul>
-            </li>
+                // Get the target from the "data-target" attribute
+                const target = el.dataset.target;
+                const $target = document.getElementById(target);
 
-            <li class="nav-item dropdown">
-              <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown"
-                id="mode-dropdown-export">Export</button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" id="mode-button-export-json">To JSON</a></li>
-                <li><a class="dropdown-item" id="mode-button-export-csv">To CSV</a></li>
-              </ul>
-            </li>
+                // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                el.classList.toggle('is-active');
+                $target.classList.toggle('is-active');
 
-            <li class="nav-item"><button type="button" class="btn btn-link" id="mode-button-summarize">Summarize</button></li>
+              });
+            });
 
-            <li class="nav-item ms-auto">
-              <div class="fw-light text-muted small navbar-text">Timeline Follow-Back v3.0.0.9000</div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-  <!-- End Navigation Bar -->
+          });
+        </script>
 
-  <!-- Main Content -->
-  <main role="main" class="container">
-    <h1 class="mt-5">content area</h1>
-    <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML
-      and CSS. A fixed navbar has been added with <code>padding-top: 60px;</code> on the
-      <code>body &gt; .container</code>.
-    </p>
-    <p>Back to <a href="../sticky-footer/">the default sticky footer</a> minus the navbar.</p>
-    <div class="container-fluid">
+        <nav class="navbar is-link" role="navigation" aria-label="main navigation">
 
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-confirm-danger">
-        Launch demo modal
-      </button>
-  </main>
-  <!-- END Main Content -->
+          <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+              <img src="/static/favicon.svg" height="28">
+            </a>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <span class="text-muted small">For internal use only. Maintained by Michael Pascale <<a
-          href="mailto:mppascale@mgh.harvard.edu">mppascale@mgh.harvard.edu</a>>. The source code is licensed
-          <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.</span>
-    </div>
-  </footer>
-  <!-- End Footer -->
+            <div class="navbar-item" style="flex-direction: column; align-items: baseline;"><b>MGH-CAM Data Management
+                Console</b><span>Timeline-Followback v3.0.0.9000</span></div>
 
-  <!-- Confirm Dangerous Operation Modal -->
-  <div class="modal fade" id="confirm-danger-modal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="confirm-danger-title"></h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body" id="confirm-danger-body"></div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="confirm-danger-cancel"></button>
-          <button type="button" class="btn btn-danger" id="confirm-danger-confirm"></button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- END Confirm Dangerous Operation Modal -->
-
-  <!-- Create Key Event -->
-  <div class="modal fade" id="modal-create-key-event" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5">Confirm deletion of calendar event(s).</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Units</label>
-            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+              data-target="nav-layout-navbar-content">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
           </div>
-          <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Notes</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" ,
-              placeholder="e.g. uses juul when at school"></textarea>
+
+          <div id="nav-layout-navbar-content" class="navbar-menu">
+            <div class="navbar-end">
+              <a class="navbar-item" href="/">
+                Return to the Data Portal
+              </a>
+              <a class="navbar-item" href="mailto:mghcam-datacore@mgb.org?subject=Help Request: CAM Data Portal">
+                Help/Report an Issue
+              </a>
+            </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger">Delete the Event(s)</button>
-        </div>
+
+        </nav>
+
+        <!------------------ TLFB APPLICATION --------------------------------->
+        <section class="m-4">
+
+          <!-- Menu Bar -->
+          <nav class="level">
+            <div class="level-left">
+              <!-- FILE Menu -->
+              <div class="level-item dropdown is-hoverable">
+                <div class="dropdown-trigger">
+                  <button class="button is-text" id="mode-dropdown-file">
+                    <span>File</span>
+                    <span class="icon">
+                      <i class="mdi mdi-menu-down mdi-24px ml-3"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item" id="mode-button-file-properties">Properties</a>
+                    <a class="dropdown-item" id="mode-button-edit-list">Substance List</a>
+                    <a class="dropdown-item" id="mode-button-summarize">Summary</a>
+
+                    <hr class="dropdown-divider">
+                    <div class="dropdown-item"><b>Import</b></div>
+                    <a class="dropdown-item pl-5" id="mode-button-import-json">From JSON</a>
+                    <a class="dropdown-item pl-5" id="mode-button-import-csv">From CSV</a>
+
+                    <hr class="dropdown-divider">
+                    <div class="dropdown-item"><b>Export</b></div>
+                    <a class="dropdown-item pl-5" id="mode-button-export-json" disabled>To JSON</a>
+                    <a class="dropdown-item pl-5" id="mode-button-export-csv">To CSV</a>
+                  </div>
+                </div>
+              </div>
+              <!-- End FILE Menu -->
+
+              <!-- EDIT Menu -->
+              <div class="level-item dropdown is-hoverable">
+                <div class="dropdown-trigger">
+                  <button class="button is-text" id="mode-dropdown-edit">
+                    <span>Edit</span>
+                    <span class="icon">
+                      <i class="mdi mdi-menu-down mdi-24px ml-3"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <div class="dropdown-item"><b>Add</b></div>
+                    <a class="dropdown-item pl-5 tlfb-edit-mode" id="edit-mode-key-event">Key Date</a>
+                    <a class="dropdown-item pl-5 tlfb-edit-mode" id="edit-mode-substance-event">Substance
+                      Event</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item tlfb-edit-mode" id="edit-mode-copy">Copy Event(s)</a>
+                    <a class="dropdown-item tlfb-edit-mode" id="edit-mode-delete">Delete Event(s)</a>
+                  </div>
+                </div>
+              </div>
+              <!-- End EDIT Menu -->
+            </div>
+
+            <!-- Centered Calendar Title -->
+            <div class="level-item is-flex-direction-column">
+              <div class="is-size-5"><span id="calendar-file-title">Subject-Visit</span></div>
+              <span class="is-size-6" id="calendar-file-subtitle">Timeline</span>
+            </div>
+            <!-- End Centered Calendar Title -->
+
+            <div class="level-right">
+              <div class="level-item">
+                <span class="has-text-danger is-size-7">Data is not saved automatically.</span>
+              </div>
+            </div>
+          </nav>
+          <!-- End Menu Bar -->
+
+          <!-- Main Content -->
+          <main class="mx-4">
+            <div id="mode-notification" class="notification is-light">
+              Click the edit menu to begin adding events.
+            </div>
+            <div id="calendar"></div>
+          </main>
+          <!-- END Main Content -->
+
+          <!-- Confirm Destructive Operation Modal -->
+          <div id="modal-confirm" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-confirm" class="modal-card">
+              <header class="modal-card-head">
+                <p class="modal-card-title">Confirm Delete Event</p>
+              </header>
+
+              <section class="modal-card-body">
+                <div class="content">
+                  <p>Confirm that you want to delete the event from the calendar.</p>
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation" type="button">Cancel</button>
+                <button class="button is-danger is-fullwidth" type="submit" name="action" value="single">Delete This Event</button>
+                <button id="delete-all-button" class="button is-danger is-fullwidth is-hidden" type="submit" name="action" value="multiple">
+                  <span>Delete <u>ALL</u> Related Events</span>
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large"></button>
+          </div>
+          <!-- END Confirm Destructive Operation Modal -->
+
+
+
+          <!-- Create Key Event -->
+          <div id="modal-key-event" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-key-event" name="key-event" class="modal-card" autocomplete="off" method="dialog">
+
+              <header class="modal-card-head">
+                <p class="modal-card-title">Key Date</p>
+                <p class="subtitle"></p>
+              </header>
+
+              <section class="modal-card-body">
+
+                <div class="content">
+
+                  <p>Start the timeline-followback session by reviewing key dates with the participant. Significant or
+                    memorable events help anchor the timeline and improve recall.</p>
+
+                  <div class="field">
+                    <label class="label">What happened on this date?</label>
+                    <div class="control">
+                      <input name="key-text" class="input" type="text" placeholder="e.g. friend's birthday" required>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation" type="button">Cancel</button>
+                <button id="add-key-event" class="button is-success is-fullwidth" type="submit">
+                  Add to Timeline
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large"></button>
+          </div>
+          <!-- END Create Key Event -->
+
+
+
+          <!-- Create Substance Use Event -->
+          <div id="modal-substance-event" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-substance-event">
+              <div class="modal-card">
+
+                <header class="modal-card-head">
+                  <p class="modal-card-title">Substance Use Event</p>
+                  <p class="subtitle"></p>
+                </header>
+
+                <section class="modal-card-body">
+                  <div class="content">
+
+                    <div class="field is-grouped">
+                      <div class="control">
+                        <label class="label">Substance Category</label>
+                        <div class="select">
+                          <select id="substance-event-substance" required>
+                            <option>Alcohol</option>
+                            <option>Cannabis</option>
+                            <option>Nicotine</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="control">
+                        <label class="label">Method of Use</label>
+                        <div class="select">
+                          <select id="substance-event-substance" required>
+                            <option>Oral</option>
+                            <option>Vaped</option>
+                            <option>Smoked</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="control">
+                        <label class="label">Substance Category</label>
+                        <div class="select">
+                          <select id="substance-event-substance" required>
+                            <option>Alcohol</option>
+                            <option>Cannabis</option>
+                            <option>Nicotine</option>
+                          </select>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="field is-grouped">
+                      <div class="control">
+                        <label class="label">Measurement Unit</label>
+                        <div class="select">
+                          <select id="substance-event-units">
+                            <option>Standard Drinks</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="control">
+                        <label class="label">Units (Other)</label>
+                        <input id="substance-event-units-other" class="input" type="text" disabled>
+                      </div>
+
+                    </div>
+
+                    <div class="field">
+                      <div class="control">
+                        <label class="label">Number of Times Used on This Date</label>
+                        <input id="substance-event-occasions" class="input" type="number" min="1" max="999" step="1"
+                          required>
+                        <p id="substance-event-occasions-help" class="help">
+                          Enter total number of occasions or use sessions on this date.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div id="substance-event-amount-section" class="field">
+                      <div class="control">
+                        <label class="label">Total Amount Used on This Date</label>
+                        <input id="substance-event-amount" class="input" type="number" min="0.0000000001"
+                          max="10000000000" step="any" required>
+                        <p id="substance-event-amount-help" class="help">
+                          Enter the <u>total</u> amount in <b id="selected-units">the selected units</b> used on this
+                          date, <u>not</u> the amount per session.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div id="substance-event-other-section" class="field">
+                      <div class="control">
+                        <label class="label">Notes</label>
+                        <textarea class="textarea" rows="5"></textarea>
+                      </div>
+                    </div>
+
+                  </div>
+                </section>
+
+                <footer class="modal-card-foot">
+                  <button class="button is-fullwidth cancel-operation" type="button">Cancel</button>
+                  <button id="add-substance-event" class="button is-success is-fullwidth" type="submit">
+                    Add to Timeline
+                  </button>
+                </footer>
+
+              </div>
+            </form>
+            <button class="modal-close is-large"></button>
+          </div>
+          <!-- END Create Substance Use Event -->
+
+
+
+        </section>
+        <!------------------ END TLFB APPLICATION --------------------------------->
       </div>
+
     </div>
+    <footer id="footer" class="footer p-2 mb-0">
+      <div class="content has-text-centered">
+        <p class="is-size-7">
+          For internal use only. Unauthorized access is prohibited. &emsp;
+          Copyright &copy; 2023, MGH Center for Addiction Medicine. All rights reserved. &emsp;
+          <span class="has-text-danger">No confidential data may contact this server.</span>
+        </p>
+      </div>
+    </footer>
   </div>
-  <!-- END Create Key Event -->
 </body>
-<script>
-  // Confirm Page Leave
-  addEventListener('beforeunload', function() { return true; });
-  // Use navigation buttons to switch modes.
-  document.querySelectorAll('[id^=mode-button]').forEach(x => x.addEventListener('click', click_mode_button));
-  // There is no mode associated with Summarize or Edit Substance List.
-  document.querySelectorAll('#mode-button-summarize,#mode-button-edit-list').forEach(x => x.addEventListener('click', deactivate_all))
-</script>
+
 </html>

@@ -1,16 +1,22 @@
-/* events.ts
+/* state.ts
+ *
  * Manage calendar events separately from the calendar UI.
  *
- * Authored by Michael Pascale <mppascale@mgh.harvard.edu>.
- * Last modified: 2023-01-24
+ * Copyright (c) 2023, Michael Pascale <mppascale@mgh.harvard.edu>
+ * Last modified: 2023-07-27
  */
+
+import { Calendar } from "@fullcalendar/core";
+import { COLOR_WHITE, COLOR_TEXT, COLOR_PURPLE, COLOR_YELLOW } from './constants'; 
 
 type UseEventProperties = {
     category: string;
     substance: string;
+    method: string;
     times: number;
     amount: number;
     units: string;
+    unitsOther: string;
 }
 
 class CalendarDate {
@@ -20,9 +26,12 @@ class CalendarDate {
     public constructor(date: string) {
 
         if (!(/^\d{4}-\d{2}-\d{2}$/).test(date))
-            throw new Error('CalendarDate expects a date in \'YYYY-MM-DD\' format.')
+            throw new Error('CalendarDate expects a date in \'YYYY-MM-DD\' format.');
 
         this._date = new Date(date);
+
+        if (isNaN(this._date.valueOf()))
+            throw new Error('CalanderDate received an invalid date.');
     }
 
     public get Date(): Date {
@@ -83,11 +92,13 @@ class CalendarDate {
     }
 }
 
-abstract class CalendarEvent {
+export abstract class CalendarEvent {
 
     private _eid = 0;
     private _gid = 0;
     private _date: CalendarDate;
+    protected _title = 'Uninitialized CalendarEvent';
+
     protected readonly _type: 'key' | 'use';
 
     public constructor(date: string, type: 'key' | 'use') {
@@ -96,6 +107,8 @@ abstract class CalendarEvent {
     }
 
     public abstract clone(): CalendarEvent;
+
+    public abstract get colors(): [string, string];
 
     public get eid() {
         return this._eid;
@@ -107,6 +120,10 @@ abstract class CalendarEvent {
 
     public get date() {
         return this._date.toString();
+    }
+
+    public get title() {
+        return this._title;
     }
 
     public set_eid(eid: number): CalendarEvent {
@@ -144,8 +161,7 @@ abstract class CalendarEvent {
     }
 }
 
-class KeyEvent extends CalendarEvent {
-    private readonly _title: string;
+export class KeyEvent extends CalendarEvent {
 
     public constructor(date: string, title: string) {
         super(date, 'key');
@@ -155,15 +171,20 @@ class KeyEvent extends CalendarEvent {
     public clone(): CalendarEvent {
         return new KeyEvent(this.date, this._title);
     }
+
+    public get colors(): [string, string] {
+        return [COLOR_YELLOW, COLOR_TEXT]
+    } 
 }
 
-class UseEvent extends CalendarEvent {
-    private _title = 'Uninitialized UseEvent';
+export class UseEvent extends CalendarEvent {
     private _category = '';
     private _substance = '';
+    private _method = '';
     private _times = 0;
     private _amount = 0;
     private _units = '';
+    private _unitsOther = '';
 
     public constructor(date: string, properties: UseEventProperties | null) {
         super(date, 'use');
@@ -176,26 +197,30 @@ class UseEvent extends CalendarEvent {
         return new UseEvent(this.date, this.properties);
     }
 
-    public get title() {
-        return this._title;
-    }
+    public get colors(): [string, string] {
+        return [COLOR_PURPLE, COLOR_WHITE]
+    } 
 
     public get properties(): UseEventProperties {
         return {
-            category:  this._category,
-            substance: this._substance,
-            times:     this._times,
-            amount:    this._amount,
-            units:     this._units
+            category:   this._category,
+            substance:  this._substance,
+            method:     this._method,
+            times:      this._times,
+            amount:     this._amount,
+            units:      this._units,
+            unitsOther: this._unitsOther
         };
     }
 
     public set_properties(properties: UseEventProperties): CalendarEvent {
-        this._category  = properties.category;
-        this._substance = properties.substance;
-        this._times     = properties.times;
-        this._amount    = properties.amount;
-        this._units     = properties.units;
+        this._category   = properties.category;
+        this._substance  = properties.substance;
+        this._method     = properties.method;
+        this._times      = properties.times;
+        this._amount     = properties.amount;
+        this._units      = properties.units;
+        this._unitsOther = properties.unitsOther;
         this.update_title();
 
         return this;
@@ -203,24 +228,27 @@ class UseEvent extends CalendarEvent {
 
     // Set the title for the event given the event properties.
     private update_title() {
-        this._title = this._substance + ' ' + this._times + 'x ' + this._amount +  this._units;
+        this._title = this._category + ' (' + this._substance + ') ' + this._method + ' ' + this._amount + this._units + ' over ' + this._times + ' occasions';
     }
 }
 
 // A CalendarEvents object stores an array of calendar events and provides
 // a safe interface through which they can be accessed and updated.
-class CalendarEventList {
+export class CalendarEventList {
     private _next_eid: number;
     private _next_gid: number;
     private _events: Array<CalendarEvent>;
+    private _fullcalendar: Calendar;
+
     public readonly start_date: CalendarDate;
     public readonly end_date: CalendarDate;
 
     // Start and end dates are *inclusive *. 
-    public constructor(start: string, end: string, events: Array<CalendarEvent> | null = null) {
+    public constructor(start: string, end: string, fullcalendar: Calendar,  events: Array<CalendarEvent> | null = null) {
         this._next_eid = 1;
         this._next_gid = 1;
         this._events = [];
+        this._fullcalendar = fullcalendar;
         this.start_date = new CalendarDate(start);
         this.end_date = new CalendarDate(end);
 
@@ -240,27 +268,52 @@ class CalendarEventList {
         return next_gid;
     }
 
+    public get_event(eid: number) {
+        const event = this._events.find((event: CalendarEvent) => event.eid == eid);
+        if (event == undefined)
+            throw Error(`CalendarEventList.get_event(): Could not find event ${eid}.`)
+        return event
+    }
+
+    public get_event_group(gid: number) {
+        const events = this._events.filter((event: CalendarEvent) => event.gid == gid);
+        if (events.length < 1)
+            throw Error(`CalendarEventList.get_event_group(): Could not find events in group ${gid}.`)
+        return events
+    }
+
+    public get_event_siblings(eid: number) {
+        const event = this.get_event(eid);
+        return this.get_event_group(event.gid).filter((event: CalendarEvent) => event.eid != eid)
+    }
+
     public get_events(): Array<CalendarEvent> {
         return this._events;
     }
 
-    public add(event: CalendarEvent): CalendarEventList {
-        this.import_events([event]);
+    public add(event: CalendarEvent, reassign=true): CalendarEventList {
+        this.import_events([event], reassign);
         return this;
     }
 
     public delete_event(eid: number): CalendarEventList {
         this._events = this._events.filter((event: CalendarEvent) => event.eid != eid);
+        this._fullcalendar.getEventById(eid.toString())?.remove()
         return this;
     }
 
     public delete_group(gid: number): CalendarEventList {
         this._events = this._events.filter((event: CalendarEvent) => event.gid != gid);
+
+        this._fullcalendar.getEvents().forEach(
+            (event) => {if (event.groupId == gid.toString()) event.remove()}
+        )
+
         return this;
     }
 
     // Import events from an array.
-    public import_events(events: Array<CalendarEvent>): CalendarEventList {
+    public import_events(events: Array<CalendarEvent>, reassign=true): CalendarEventList {
         
         // Group relationships must be preserved.
         const gid_mapping = 
@@ -276,11 +329,27 @@ class CalendarEventList {
 
         this._events = 
             this._events.concat(events.map((event: CalendarEvent) => {
-                // Events can be assigned a completely new eid.
-                event.set_eid(this._get_next_eid());
+                const eid = this._get_next_eid()
+                const gid = gid_mapping.get(event.gid)
 
-                // @ts-expect-error Map.prototype.get() can return undefined. That shouldn't happen here.
-                event.set_gid(gid_mapping.get(event.gid));
+                // Events can be assigned a completely new eid.
+                event.set_eid(eid);
+                if (reassign)
+                    // @ts-expect-error Map.prototype.get() can return undefined. That shouldn't happen here.
+                    event.set_gid(gid);
+
+                this._fullcalendar.addEvent({
+                    id: event.eid.toString(),
+                    groupId: event.gid.toString(),
+
+                    start: event.date,
+                    title: event.title,
+
+                    textColor: event.colors[1],
+                    backgroundColor: event.colors[0],
+                    borderColor: event.colors[0]
+                })
+
                 return event;
             }));
         

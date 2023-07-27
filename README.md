@@ -8,81 +8,19 @@ The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Met
 Download the following libraries. Rename accordingly and place the files under `lib/`.
 
 - `bulma-0.9.2.min.css`
+- `materialdesignicons-6.5.95.min.css`
 - `fullcalendar-5.8.0.css`
 - `fullcalendar-5.8.0.js`
+- `fullcalendar-rrule-5.8.0.js` (plugin)
 - `jquery-3.6.0.min.js`
 - `dayjs-1.10.6.min.js`
 - `dayjs-duration-1.10.6.min.js` (plugin)
 - `dayjs-customParseFormat-1.10.6.min.js` (plugin)
+- `rrule-2.7.1.min.js`
 
-A REDCap database must have scoring instrument to store the summarized results of the timeline follow-back. Upload `instrument.csv` to your database.
-
-
-## Configuration
-
-This project makes use of [composer](https://getcomposer.org/) to manage PHP dependencies. Run `composer install` to install dependencies to `vendor/`.
-
-Create a `config.ini` in the top level directory with the following contents for each project.
-```ini
-[40165] # REDCAP Project ID
-redcap[uri]='https://redcap.example.org/redcap/api/'
-redcap[key]='Y3L1AZNBLS4TBUQLLFR5I5632M1HP5DN'
-redcap[arm]=1
-
-# The event in which to look for subject-level data.
-events[screen]='screening_visit_arm_1' 
-
-# Record of the study visit.
-forms[visit]='visitstart'   
-# Timeline follow-back instrument.
-forms[tlfb]='tlfb_scoring_module'
-
-# Study ID field.
-fields[secondary_id]='visitstart_studyid'
-# Date-of-Birth field.
-fields[dob]='dob'
-# Date of the study visit.
-fields[start]='visitstart_starttime'
-# Whether the participant showed up for the visit.
-fields[show]='visitstart_ptshowed'
-
-# Date of the timeline follow-back completion.
-fields[tlfb_date]='tlfb_date'
-
-# The default number of days to look back.
-timeline[days]=90
-```
-
-Also present should be a `substances.json`.
-
-
-### `substances.json`
-
-```jsonc
-{
-    "category": [
-        {
-            "id": "Category ID",
-            "label": "Category Name"
-        }
-    ],
-    "substance": {
-        "Category ID": [
-            {
-                "label": "Substance Name",
-                "alt": "Alternative Names",
-                "units": [
-                    "Unit labels, e.g. 'mg'"
-                ],
-                "notes": "Prompt to display in the notes field"
-
-            }
-        ]
-    }
-}
-
-```
-
+npx tsc
+npx webpack
+npx webpack serve
 
 ## Credits
 
@@ -90,7 +28,7 @@ Sobell L.C., Sobell M.B. (1992) Timeline Follow-Back.
 
 Adapted from the timeline follow-back application developed for the [Adolescent Brain Cognitive Development](https://github.com/ABCD-STUDY/timeline-followback) study. 
 
-Made possible with [FullCalendar](https://fullcalendar.io/), [jQuery](https://jquery.com/), [Guzzle](https://docs.guzzlephp.org/en/stable/), [Day.js](https://day.js.org/), [Bulma](https://bulma.io/), and [Material Design Icons](https://github.com/google/material-design-icons).
+Made possible with [FullCalendar](https://fullcalendar.io/), [Bulma](https://bulma.io/), TypeScript and Webpack.
 
 
 ## References

@@ -1,7 +1,9 @@
 lib/
-vendor/
-data/
-composer.lock
-substances.json
-studies.json
-*.ini
+data/*
+!data/.gitkeep
+node_modules/
+.vscode/
+.DS_Store
+static/*
+!static/tlfb-v3-bundle.js
+

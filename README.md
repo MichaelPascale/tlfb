@@ -2,25 +2,54 @@
 
 The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by [Linda C. and Mark B. Sobell](#Credits). This web-based timeline form has beed developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and is designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
 
-
 ## Prerequisites
 
-Download the following libraries. Rename accordingly and place the files under `lib/`.
+Download and copy the following libraries to the `static/` directory.
 
-- `bulma-0.9.2.min.css`
-- `materialdesignicons-6.5.95.min.css`
-- `fullcalendar-5.8.0.css`
-- `fullcalendar-5.8.0.js`
-- `fullcalendar-rrule-5.8.0.js` (plugin)
-- `jquery-3.6.0.min.js`
-- `dayjs-1.10.6.min.js`
-- `dayjs-duration-1.10.6.min.js` (plugin)
-- `dayjs-customParseFormat-1.10.6.min.js` (plugin)
-- `rrule-2.7.1.min.js`
+- `bulma.min.css` ([Bulma](https://bulma.io/) v0.9.4)
+- `fonts/material-icons.css` ([Material Design Icons](https://pictogrammers.com/library/mdi/) v7.0.96)
 
-npx tsc
-npx webpack
+You'll also need to install [Node.js](https://nodejs.org/en) which provides `npm` (Node Package Manager). You'll need this to install TypeScript and Webpack.
+
+On MacOS, the easist way to install Node is with [`brew`](https://brew.sh/) (Homebrew). Alternatively, you can use [`nvm`](https://github.com/nvm-sh/nvm) (Node Version Manager).
+
+```bash
+brew install node@18
+```
+
+Using `npm`, we can now automatically install all the packages listed in `package.json`.
+
+```bash
+npm install
+```
+
+## Running the App
+
+The application consists of what you see in `index.html` and the TypeScript under `src/`.
+
+We won't be using the TypeScript compiler `tsc` directly. Instead, Webpack will compile and then bundle all of our code into a single JavaScript file under `static/tlfb-v3-bundle.js`.
+
+### For development purposes
+
+`webpack-dev-server` provides hot reload each time you save a TypeScript file. See the `head` of `index.html` to correct the path, then run `webpack`.
+
+```bash
 npx webpack serve
+```
+
+This will start the development server, and you should be able to open the webpage by going to`localhost:8080` in your web browser.
+
+### To bundle for production
+
+See the `head` of `index.html` to correct the script paths, then run `webpack`.
+
+```bash
+npx webpack
+```
+
+This will create the final bundle under `static/tlfb-v3-bundle.js`.
+
+Simply copy `index.html` and the `static/` directory onto your production webserver.
 
 ## Credits
 
@@ -29,7 +58,6 @@ Sobell L.C., Sobell M.B. (1992) Timeline Follow-Back.
 Adapted from the timeline follow-back application developed for the [Adolescent Brain Cognitive Development](https://github.com/ABCD-STUDY/timeline-followback) study. 
 
 Made possible with [FullCalendar](https://fullcalendar.io/), [Bulma](https://bulma.io/), TypeScript and Webpack.
-
 
 ## References
 
@@ -45,4 +73,4 @@ Sobell, L. C., & Sobell, M. B. (1992). _Timeline Follow-Back_. In R. Z. Litten &
 
 
 ---
-Source code is copyright (c) 2021, Michael Pascale and distributed under the MIT License.
+Source code is copyright (c) 2023, Michael Pascale and distributed under the MIT License.

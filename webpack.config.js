@@ -1,7 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: './src/main.ts',
+  devtool: 'inline-source-map',
   mode: 'production',
   module: {
     rules: [
@@ -20,7 +21,15 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'tlfb-v3-bundle.js',
+    path: path.resolve(__dirname, 'static'),
   },
+  devServer: {
+    static: {
+      directory: path.join(__dirname)
+    }
+  },
+  performance: {
+    hints: false // No warning for large bundle size
+  }
 };

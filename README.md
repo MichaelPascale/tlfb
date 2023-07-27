@@ -18,60 +18,9 @@ Download the following libraries. Rename accordingly and place the files under `
 - `dayjs-customParseFormat-1.10.6.min.js` (plugin)
 - `rrule-2.7.1.min.js`
 
-A REDCap database must have scoring instrument to store the summarized results of the timeline follow-back. Upload `instrument.csv` to your database.
-
-
-## Configuration
-
-Create a `config.ini` in the top level directory with the following contents.
-```ini
-save=true                       # Whether to save a backup copy of data on the server.
-debug=false                     # Whether to display debugging information on the calendar.
-
-[default]                       # Default settings for when no REDCap project is specified.
-name="Default Configuration"    # Project name.
-days=30                         # The number of days that should be visible by default.
-events[v0]="Baseline Visit"     # Map each REDCap event (e.g. v0) to a user friendly name to appear in the dropdown.
-
-# For each REDCap Project...
-[38762]                         # The REDCap PID.
-name="Vaping Study"
-days=90
-events[v0_screening_arm_2]="Visit 0 / Screening Visit"
-events[v1_baseline_arm_2]="Visit 1 / Baseline Visit"
-events[v2_4wk_arm_2]="Visit 2 / 4 Weeks"
-```
-
-Also present should be a `substances.json`.
-
-
-### `substances.json`
-
-```jsonc
-{
-    "category": [
-        {
-            "id": "Category ID",
-            "label": "Category Name"
-        }
-    ],
-    "substance": {
-        "Category ID": [
-            {
-                "label": "Substance Name",
-                "alt": "Alternative Names",
-                "units": [
-                    "Unit labels, e.g. 'mg'"
-                ],
-                "notes": "Prompt to display in the notes field"
-
-            }
-        ]
-    }
-}
-
-```
-
+npx tsc
+npx webpack
+npx webpack serve
 
 ## Credits
 
@@ -79,7 +28,7 @@ Sobell L.C., Sobell M.B. (1992) Timeline Follow-Back.
 
 Adapted from the timeline follow-back application developed for the [Adolescent Brain Cognitive Development](https://github.com/ABCD-STUDY/timeline-followback) study. 
 
-Made possible with [FullCalendar](https://fullcalendar.io/), [jQuery](https://jquery.com/), [Guzzle](https://docs.guzzlephp.org/en/stable/), [Day.js](https://day.js.org/), [Bulma](https://bulma.io/), and [Material Design Icons](https://github.com/google/material-design-icons).
+Made possible with [FullCalendar](https://fullcalendar.io/), [Bulma](https://bulma.io/), TypeScript and Webpack.
 
 
 ## References

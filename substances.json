@@ -1,0 +1,85 @@
+{
+    "category": [
+        {"id": "etoh","label": "Alcohol"},
+        {"id": "mj","label": "Cannabis"},
+        {"id": "nic","label": "Nicotine/Tobacco"},
+        {"id": "stim","label": "Stimulants"},
+        {"id": "coc","label": "Cocaine"},
+        {"id": "opi","label": "Opioids"},
+        {"id": "hall","label": "Hallucinogens"},
+        {"id": "diss","label": "Dissociative Drugs"},
+        {"id": "inh","label": "Inhalants"},
+        {"id": "sdh","label": "Sedatives, Hypnotics or Anxiolytics"},
+        {"id": "misc","label": "Miscellaneous"}
+    ],
+    "substance": {
+        "etoh": [
+            {"label": "Alcohol", "units": ["standard drinks"]}
+        ],
+        "mj": [
+            {"label": "Smoked Marijuana", "units": ["grams", "milligrams", "ounces", "joints", "blunts", "bowls", "bongs", "bats", "pipes"]},
+            {"label": "Edibles", "alt": "Containing THC", "units": ["grams", "milligrams", "ounces"]},
+            {"label": "Synthetic Marijuana", "alt": "K2", "units": ["grams", "milligrams", "ounces"]},
+            {"label": "MJ Infused Alcoholic Drinks", "units": ["standard drinks"]},
+            {"label": "MJ Concentrates", "units": ["milligrams"]},
+            {"label": "Tincture", "units": ["milliliters"]},
+            {"label": "Other Cannabis"}
+        ],
+        "nic": [
+            {"label": "Smoked Tobacco", "units": ["cigarettes", "cigars", "pipes", "cigarillos", "spliffs", ""]},
+            {"label": "E-cigarettes", "units": ["hits"]},
+            {"label": "Hookah", "units": ["hits"]},
+            {"label": "Chewing Tobacco", "units": ["pinches"]},
+            {"label": "Nicotine Replacement", "units": ["doses"]},
+            {"label": "Other Nioctine/Tobacco"}
+        ],
+        "stim": [
+            {"label": "Stimulant Medications", "alt:": "Ritalin, Adderall, Ephedrine", "units": ["pills"]},
+            {"label": "Bath Salts", "alt": "Cathinones"},
+            {"label": "Methamphetamine"},
+            {"label": "Other Stimulant"}
+        ],
+        "coc": [
+            {"label": "Cocaine"}
+        ],
+        "opi": [
+            {"label": "Heroin"},
+            {"label": "Morphine"},
+            {"label": "Dilaudid"},
+            {"label": "Opium"},
+            {"label": "Demerol"},
+            {"label": "Methadone"},
+            {"label": "Darvon"},
+            {"label": "Codeine"},
+            {"label": "Percodan"},
+            {"label": "Vicodin"},
+            {"label": "OxyContin"},
+            {"label": "Other Opioid"}
+        ],
+        "hall": [
+            {"label": "LSD", "alt": "Acid"},
+            {"label": "Salvia"},
+            {"label": "Psilocybin", "alt": "Mushrooms"},
+            {"label": "MDMA", "alt": "Ecstasy, Molly", "units": ["tablets"]},
+            {"label": "Other Hallucinogen", "note": "Substance Name"}
+        ],
+        "diss": [
+            {"label": "Ketamine"},
+            {"label": "Other Dissociative"}
+        ],
+        "inh": [
+            {"label": "Nitrous Oxide"},
+            {"label": "Ethyl Chloride"},
+            {"label": "Other Inhalant", "note": "Substance Name"}
+        ],
+        "sdh": [
+            {"label": "Barbiturates"},
+            {"label": "Benzodiazepines", "alt": "Benzos"},
+            {"label": "Other Tranquilizer or Sedative", "units": ["pills"], "note": "Substance Name"}
+        ],
+        "misc": [
+            {"label": "GHB"},
+            {"label": "Cough or Cold Medicine"}            
+        ]
+    }
+}

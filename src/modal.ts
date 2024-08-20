@@ -2,7 +2,7 @@
  *
  * The Modal class handles all of the modal forms used throughout the application.
  *
- * Copyright (c) 2023, Michael Pascale <mppascale@mgh.harvard.edu>
+ * Copyright (c) 2024, Michael Pascale <mppascale@mgh.harvard.edu>
  * Last modified: 2023-07-27
  */
 
@@ -29,7 +29,7 @@ export class Modal {
         
     }
 
-    private reset() {
+    public reset() {
         console.log(`Modal.reset(): ${this._element.id}`)
         this._form?.reset();
     }

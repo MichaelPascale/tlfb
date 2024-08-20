@@ -2,7 +2,7 @@
  * 
  * Defines various constants used elsewhere.
  * 
- * Copyright (c) 2023, Michael Pascale <mppascale@mgh.harvard.edu>
+ * Copyright (c) 2024, Michael Pascale <mppascale@mgh.harvard.edu>
  * Last modified: 2023-07-26
  */
 

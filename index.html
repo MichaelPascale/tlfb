@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <!-- Copyright (c) 2023, Michael Pascale -->
+  <!-- Copyright (c) 2024, Michael Pascale, Ivy Zhu -->
   <!-- Online Multisubstance Timeline Followback -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,7 +31,10 @@
       padding: 5px;
       left: 50%;
       transform: translateX(-50%);
-      /* display: none; */
+    }
+
+    .modal-large {
+      width: 1000px;
     }
   </style>
 </head>
@@ -114,19 +117,19 @@
                 </div>
                 <div class="dropdown-menu" role="menu">
                   <div class="dropdown-content">
-                    <a class="dropdown-item" id="mode-button-file-properties">Properties</a>
-                    <a class="dropdown-item" id="mode-button-edit-list">Substance List</a>
-                    <a class="dropdown-item" id="mode-button-summarize">Summary</a>
+                    <a class="dropdown-item tlfb-file-mode" id="mode-button-file-properties">Properties</a>
+                    <a class="dropdown-item tlfb-file-mode" id="mode-button-edit-list">Substance List</a>
+                    <a class="dropdown-item tlfb-file-mode" id="mode-button-summarize">Summary</a>
 
                     <hr class="dropdown-divider">
                     <div class="dropdown-item"><b>Import</b></div>
-                    <a class="dropdown-item pl-5" id="mode-button-import-json">From JSON</a>
-                    <a class="dropdown-item pl-5" id="mode-button-import-csv">From CSV</a>
+                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-import-json">From JSON</a>
+                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-import-csv">From CSV</a>
 
                     <hr class="dropdown-divider">
                     <div class="dropdown-item"><b>Export</b></div>
-                    <a class="dropdown-item pl-5" id="mode-button-export-json" disabled>To JSON</a>
-                    <a class="dropdown-item pl-5" id="mode-button-export-csv">To CSV</a>
+                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-export-json" disabled>To JSON</a>
+                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-export-csv">To CSV</a>
                   </div>
                 </div>
               </div>
@@ -148,6 +151,8 @@
                     <a class="dropdown-item pl-5 tlfb-edit-mode" id="edit-mode-key-event">Key Date</a>
                     <a class="dropdown-item pl-5 tlfb-edit-mode" id="edit-mode-substance-event">Substance
                       Event</a>
+                    <a class="dropdown-item pl-5 tlfb-edit-mode" id="edit-mode-no-substance">No Substances 
+                    Used</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item tlfb-edit-mode" id="edit-mode-copy">Copy Event(s)</a>
                     <a class="dropdown-item tlfb-edit-mode" id="edit-mode-delete">Delete Event(s)</a>
@@ -180,6 +185,12 @@
             <div id="calendar"></div>
           </main>
           <!-- END Main Content -->
+
+
+          
+          <!-- ----- Edit Dropdown Modals ----- -->
+
+
 
           <!-- Confirm Destructive Operation Modal -->
           <div id="modal-confirm" class="modal">
@@ -267,32 +278,8 @@
                       <div class="control">
                         <label class="label">Substance Category</label>
                         <div class="select">
-                          <select id="substance-event-substance" required>
-                            <option>Alcohol</option>
-                            <option>Cannabis</option>
-                            <option>Nicotine</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div class="control">
-                        <label class="label">Method of Use</label>
-                        <div class="select">
-                          <select id="substance-event-substance" required>
-                            <option>Oral</option>
-                            <option>Vaped</option>
-                            <option>Smoked</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div class="control">
-                        <label class="label">Substance Category</label>
-                        <div class="select">
-                          <select id="substance-event-substance" required>
-                            <option>Alcohol</option>
-                            <option>Cannabis</option>
-                            <option>Nicotine</option>
+                          <select name="substance-event-category" id="substance-event-category" required>
+                           
                           </select>
                         </div>
                       </div>
@@ -301,25 +288,33 @@
 
                     <div class="field is-grouped">
                       <div class="control">
-                        <label class="label">Measurement Unit</label>
+                        <label class="label">Method of Use</label>
                         <div class="select">
-                          <select id="substance-event-units">
-                            <option>Standard Drinks</option>
+                          <select name="substance-event-method" id="substance-event-method" required>
+                            
                           </select>
                         </div>
                       </div>
 
-                      <div class="control">
-                        <label class="label">Units (Other)</label>
-                        <input id="substance-event-units-other" class="input" type="text" disabled>
+                      <div class="control" id="substance-method-other">
+                        <label class="label">Method of Use (Other)</label>
+                        <input name="substance-event-method-other"  id="substance-event-method-other" class="input" type="text">
                       </div>
 
+                      <div class="control">
+                        <label class="label">Type</label>
+                        <div class="select">
+                          <select name="substance-event-type" id="substance-event-type" required>
+                            
+                          </select>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="field">
                       <div class="control">
                         <label class="label">Number of Times Used on This Date</label>
-                        <input id="substance-event-occasions" class="input" type="number" min="1" max="999" step="1"
+                        <input name="substance-event-occasions"  id="substance-event-occasions" class="input" type="number" min="1" max="999" step="1"
                           required>
                         <p id="substance-event-occasions-help" class="help">
                           Enter total number of occasions or use sessions on this date.
@@ -327,22 +322,50 @@
                       </div>
                     </div>
 
-                    <div id="substance-event-amount-section" class="field">
+                    <div class="is-flex-direction-column">
+                      <div id="substance-event-amount-section" class="field is-grouped is-flex-direction-row mb-0">
+                        <div class="control">
+                          <label class="label">Total Amount Used on This Date</label>
+                          <input name="substance-event-amount"  id="substance-event-amount" class="input" type="number" min="0.0000000001"
+                            max="10000000000" step="any" required>
+                        </div>
+  
+                        <div class="control is-align-content-flex-end pb-2">
+                          <input type="checkbox" name="substance-event-amount-unknown" id="substance-event-amount-unknown" value="unknown">
+                          <label for="substance-event-amount-unknown">Unknown/Not Applicable</label>
+                        </div>
+                      </div>
+
+                      <p id="substance-event-amount-help" class="help mb-3">
+                        Enter the <u>total</u> amount in <b id="selected-units">the selected units</b> used on this
+                        date, <u>not</u> the amount per session.
+                      </p>
+                    </div>
+
+                    <div class="field is-grouped ">
                       <div class="control">
-                        <label class="label">Total Amount Used on This Date</label>
-                        <input id="substance-event-amount" class="input" type="number" min="0.0000000001"
-                          max="10000000000" step="any" required>
-                        <p id="substance-event-amount-help" class="help">
-                          Enter the <u>total</u> amount in <b id="selected-units">the selected units</b> used on this
-                          date, <u>not</u> the amount per session.
-                        </p>
+                        <label class="label">Measurement Unit</label>
+                        <div class="select">
+                          <select name="substance-event-units" id="substance-event-units">
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="control">
+                        <label class="label">Units (Other)</label>
+                        <input name="substance-event-units-other"  id="substance-event-units-other" class="input" type="text" disabled>
+                      </div>
+
+                      <div class="control is-align-content-flex-end pb-2">
+                        <input type="checkbox" name="substance-event-units-unknown" id="substance-event-units-unknown" value="unknown">
+                        <label for="substance-event-units-unknown">Unknown</label>
                       </div>
                     </div>
 
                     <div id="substance-event-other-section" class="field">
                       <div class="control">
                         <label class="label">Notes</label>
-                        <textarea class="textarea" rows="5"></textarea>
+                        <textarea name="substance-event-notes" class="textarea" rows="5"></textarea>
                       </div>
                     </div>
 
@@ -361,6 +384,338 @@
             <button class="modal-close is-large"></button>
           </div>
           <!-- END Create Substance Use Event -->
+
+
+
+          <!-- ----- File Dropdown Modals ----- -->
+
+
+
+          <!-- View/edit Properties -->
+          <div id="modal-update-properties" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-update-properties" name="update-properties" class="modal-card" autocomplete="off" method="dialog">
+
+              <header class="modal-card-head">
+                <p class="modal-card-title">Update Properties</p>
+                <p class="subtitle"></p>
+              </header>
+
+              <section class="modal-card-body">
+
+                <div class="content">
+                  <p class="has-text-danger mx-1" id="properties-warn"></p>
+                  <div class="field">
+                    <div class="control">
+                      <label class="label">Project</label>
+                      <input id="project-name" name="project-name" class="input" type="text" placeholder="" required>
+                    </div>
+
+                    <div class="control">
+                      <label class="label">CAM Identifier</label>
+                      <input id="cam-id" name="cam-identifier" class="input" type="text" placeholder="XXXXX" required>
+                    </div>
+
+                    <div class="control">
+                      <label class="label">Record Identifier</label>
+                      <input id="record-id" name="record-identifier" class="input" type="text" placeholder="" required>
+                    </div>
+
+                    <div class="control">
+                      <label class="label">Event</label>
+                      <input id="tlfb-event" name="tlfb-event" class="input" type="text" placeholder="" required>
+                    </div>
+
+                    <div class="control">
+                      <label class="label">Keyfield</label>
+                      <input id="tlfb-keyfield" name="tlfb-keyfield" class="input" type="text" placeholder="" required>
+                    </div>
+
+                    <div class="field is-grouped">
+                      <div> 
+                        <label class="label">Start Date</label>
+                        <input id="tlfb-start" type="date" name="tlfb-start" required/>
+                      </div>
+                      <div>
+                        <label class="label">End Date</label>
+                        <input id="tlfb-end" type="date" name="tlfb-end" required/>
+                      </div>
+                    </div>
+
+                    <div class="control">
+                      <label class="label">Staff</label>
+                      <input id="tlfb-staff" name="tlfb-staff" class="input" type="text" placeholder="" required>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation" type="button">Cancel</button>
+                <button id="edit-properties" class="button is-success is-fullwidth" type="submit">
+                  Confirm
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large"></button>
+          </div>
+          <!-- END View/edit Properties -->
+
+
+
+          <!-- Select Substances -->
+          <div id="modal-select-substances" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-select-substances" name="select-substances" class="modal-card" autocomplete="off" method="dialog">
+
+              <header class="modal-card-head">
+                <p class="modal-card-title">Substances Used</p>
+                <p class="subtitle"></p>
+              </header>
+
+              <section class="modal-card-body">
+
+                <div class="content">
+                  <p>Please select all substances used during the given period of time.</p>
+                  <div class="field" id="substance-form">
+                  </div>
+
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation" type="button">Cancel</button>
+                <button id="select-substances-used" class="button is-success is-fullwidth" type="submit">
+                  Confirm
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large"></button>
+          </div>
+          <!-- END Select Substances -->
+
+
+          
+          <!-- Get Summary -->
+          <div id="modal-get-summary" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-get-summary" name="get-summary" class="modal-card modal-large" autocomplete="off" method="dialog">
+
+              <header class="modal-card-head">
+                <p class="modal-card-title">Timeline Summary</p>
+                <p class="subtitle"></p>
+              </header>
+
+              <section class="modal-card-body">
+
+                <div class="content container">
+                  <p>Calculations are based on non-missing data points only.</p>
+
+                  <table class="table is-fullwidth">
+                    <thead>
+                      <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Total number of days alcohol consumed</td><td id="tlfb_etoh_total_days"></td></tr>
+                      <tr><td>Total number of standard drinks consumed</td><td id="tlfb_etoh_total_units"></td></tr>
+                      <tr><td>Average days/week alcohol consumed</td><td id="tlfb_etoh_avg_days"></td></tr>
+                      <tr><td>Average drinks/week of alcohol consumed</td><td id="tlfb_etoh_avg_units"></td></tr>
+                      <tr><td>Average drinks/drinking day</td><td id="tlfb_etoh_avg_unitsday"></td></tr>
+                      <tr><td>Days since last alcohol use</td><td id="tlfb_etoh_last_use"></td></tr>
+                      <tr><td>Total number of days cannabis consumed</td><td id="tlfb_mj_total_days"></td></tr>
+                      <tr><td>Total number of times cannabis consumed</td><td id="tlfb_mj_total_units"></td></tr>
+                      <tr><td>Average days/week cannabis consumed</td><td id="tlfb_mj_avg_days"></td></tr>
+                      <tr><td>Average times/week of cannabis consumed</td><td id="tlfb_mj_avg_units"></td></tr>
+                      <tr><td>Average times/cannabis use day</td><td id="tlfb_mj_avg_unitsday"></td></tr>
+                      <tr><td>Days since last cannabis use</td><td id="tlfb_mj_last_use"></td></tr>
+                      <tr><td>Total number of days nicotine consumed</td><td id="tlfb_nic_total_days"></td></tr>
+                      <tr><td>Total number of times nicotine consumed</td><td id="tlfb_nic_total_units"></td></tr>
+                      <tr><td>Average days/week nicotine consumed</td><td id="tlfb_nic_avg_days"></td></tr>
+                      <tr><td>Average times/week of nicotine consumed</td><td id="tlfb_nic_avg_units"></td></tr>
+                      <tr><td>Average times/nicotine use day</td><td id="tlfb_nic_avg_unitsday"></td></tr>
+                      <tr><td>Days since last nicotine use</td><td id="tlfb_nic_last_use"></td></tr>
+                    
+                    </tbody>
+                  </table>
+
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation" type="button">Cancel</button>
+                <button id="get-summary" class="button is-success is-fullwidth" type="submit">
+                  Export Data
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large"></button>
+          </div>
+          <!-- END Get Summary -->
+
+
+          <!-- Confirm Export -->
+          <div id="modal-confirm-export" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-confirm-export" class="modal-card">
+              <header class="modal-card-head">
+                <p class="modal-card-title">Method of exporting</p>
+              </header>
+
+              <section class="modal-card-body">
+                <div class="content">
+                  <p>Please select the form you would like to export the data in.</p>
+                  <div class="select">
+                    <select name="select-export-method" id="select-export-method" required>
+                      <option value="json">json</option>
+                      <option value="csv">csv</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation" type="button">Cancel</button>
+                <button id="import-selection" class="button is-success is-fullwidth" type="submit">
+                  Confirm
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large"></button>
+          </div>
+          <!-- END Confirm Export -->
+
+
+          <!-- Import JSON -->
+          <div id="modal-import-json" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-import-json" name="import-json" class="modal-card" autocomplete="off" method="dialog">
+
+              <header class="modal-card-head">
+                <p class="modal-card-title">Import events from a previous calendar session</p>
+                <p class="subtitle" id="upload-date"></p>
+              </header>
+
+              <section class="modal-card-body">
+                <div class="content">
+          
+                  <p>Modify a previous timeline entry or finish a partial entry by uploading the JSON data file.</p>
+          
+                  <div class="file has-name is-fullwidth">
+                    <label class="file-label">
+                      <input id="upload-data-json" class="file-input" type="file" name="upload-data" accept=".json" required>
+                      <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="mdi mdi-file-upload mdi-24px"></i>
+                        </span>
+                        <span class="file-label">
+                          Choose a file…
+                        </span>
+                      </span>
+                      <span id="filename-upload-json" class="file-name">
+                        *.json
+                      </span>
+                    </label>
+                  </div>
+                  <p class="has-text-danger mx-1" id="json-warn"></p>
+                  <p class="help mx-1">Older data files may not import properly.</p>
+          
+                  <pre id="upload-out" class="m-5">
+             Subject: <span id="upload-out-subject"></span>
+               Event: <span id="upload-out-event"></span>
+          
+               Start: <span id="upload-out-start"></span>
+                 End: <span id="upload-out-end"></span>
+          
+            # Events: <span id="upload-out-events"></span>
+          
+            Earliest: <span id="upload-out-earliest"></span>
+              Latest: <span id="upload-out-latest"></span>
+          
+          Substances: <span id="upload-out-substances"></span>
+                  </pre>
+          
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation cancel-import" type="button">Cancel</button>
+                <button id="import-json" class="button is-success is-fullwidth" type="submit">
+                  Confirm
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large cancel-import"></button>
+          </div>
+          <!-- END Import JSON -->
+
+
+
+          <!-- Import CSV -->
+          <div id="modal-import-csv" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-import-csv" name="import-csv" class="modal-card" autocomplete="off" method="dialog">
+
+              <header class="modal-card-head">
+                <p class="modal-card-title">Import events from a previous calendar session</p>
+                <p class="subtitle" id="upload-date"></p>
+              </header>
+
+              <section class="modal-card-body">
+                <div class="content">
+          
+                  <p>Modify a previous timeline entry or finish a partial entry by uploading the CSV data file.</p>
+          
+                  <div class="file has-name is-fullwidth">
+                    <label class="file-label">
+                      <input id="upload-data-csv" class="file-input" type="file" name="upload-data" accept=".csv" required>
+                      <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="mdi mdi-file-upload mdi-24px"></i>
+                        </span>
+                        <span class="file-label">
+                          Choose a file…
+                        </span>
+                      </span>
+                      <span id="filename-upload-csv" class="file-name">
+                        *.csv
+                      </span>
+                    </label>
+                  </div>
+                  <p class="has-text-danger mx-1" id="csv-warn"></p>
+                  <p class="help mx-1">Older data files may not import properly.</p>
+          
+                  <pre id="upload-csv" class="m-5">
+             Subject: <span id="upload-csv-subject"></span>
+               Event: <span id="upload-csv-event"></span>
+          
+               Start: <span id="upload-csv-start"></span>
+                 End: <span id="upload-csv-end"></span>
+          
+            # Events: <span id="upload-csv-events"></span>
+          
+            Earliest: <span id="upload-csv-earliest"></span>
+              Latest: <span id="upload-csv-latest"></span>
+          
+          Substances: <span id="upload-csv-substances"></span>
+                  </pre>
+          
+                </div>
+              </section>
+
+              <footer class="modal-card-foot">
+                <button class="button is-fullwidth cancel-operation cancel-import" type="button">Cancel</button>
+                <button id="import-csv" class="button is-success is-fullwidth" type="submit">
+                  Confirm
+                </button>
+              </footer>
+            </form>
+            <button class="modal-close is-large cancel-import"></button>
+          </div>
+          <!-- END Import CSV -->
 
 
 

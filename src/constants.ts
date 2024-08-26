@@ -3,8 +3,10 @@
  * Defines various constants used elsewhere.
  * 
  * Copyright (c) 2024, Michael Pascale <mppascale@mgh.harvard.edu>
- * Last modified: 2023-07-26
+ * Last modified: 2024-08-26
  */
+
+export const VERSION = '3.0.0';
 
 // Time conversion factors.
 export const CVT_MS_S = 1000;
@@ -17,14 +19,14 @@ export const CVT_MS_DAY = CVT_MS_S * CVT_S_MIN * CVT_MIN_HR * CVT_HR_DAY;
 export const CAL_HEIGHT_DIFF = 205;
 
 
-export const COLOR_WHITE  = '#FFFFFF'
-export const COLOR_TEXT   = '#15141A'
+export const COLOR_WHITE  = '#FFFFFF';
+export const COLOR_TEXT   = '#15141A';
 
-export const COLOR_PURPLE = '#485FC7'
-export const COLOR_ORANGE = '#E67975'
-export const COLOR_YELLOW = '#F7DBA7'
-export const COLOR_GREEN  = '#041F1E'
-export const COLOR_BROWN  = '#5A352A'
+export const COLOR_PURPLE = '#485FC7';
+export const COLOR_ORANGE = '#E67975';
+export const COLOR_YELLOW = '#F7DBA7';
+export const COLOR_GREEN  = '#041F1E';
+export const COLOR_BROWN  = '#5A352A';
 
 // Regular Expressions for input validation.
 export const RGX_INTEGER = /^\d+$/;

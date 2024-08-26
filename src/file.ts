@@ -15,6 +15,7 @@ import { CalendarDate, CalendarEvent, UseEvent, NoUseEvent, KeyEvent } from './s
 
 import * as calculate from './calculate'
 import { Editor } from './editor';
+import { VERSION } from './constants';
 
 export class File {
     private _current_properties: TLFBProperties;
@@ -468,7 +469,7 @@ export class File {
 
     public valid_CSV(csv: (string | number)[][]) {
         const title_row = ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", 
-                           "", "", "", "", "", "", ""]
+                           "AppVersion", "", "", "", "", "", ""]
         const event_title_row = ["Event", "Date", "Type", "eID", 'gID', 'Title', "Category", "Substance", "MethodType", 
                                  "Method", "MethodOther", "Times", "Amount", "Units", "UnitsOther", "Note"]
         const filler_row = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
@@ -864,6 +865,7 @@ export class File {
             record: this._current_properties.record,
             keyfield: this._current_properties.keyfield,
             datetime: new Date(),
+            appversion: VERSION,
             events: this._editor.get_event_list().serialize_events('json'),
         }
         const data_json = JSON.stringify(data)
@@ -885,10 +887,10 @@ export class File {
 
         const properties_rows: (string | number)[][] = [
             // Header for csv file, "" as placeholders for empty spaces
-            ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", "", "", "", "", "", "", ""],
+            ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", "AppVersion", "", "", "", "", "", ""],
             [this._current_properties.subject, this._current_properties.timepoint, this._current_properties.pid, this._current_properties.start, 
              this._current_properties.end, this._current_properties.staff, this._current_properties.record, this._current_properties.keyfield, 
-             (new Date).toISOString(), "", "", "", "", "", "", ""],
+             (new Date).toISOString(), VERSION, "", "", "", "", "", "", ""],
             ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] // Empty row for readability 
         ]
 

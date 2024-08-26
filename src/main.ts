@@ -26,7 +26,7 @@ import { File } from './file'
 import { TLFBProperties, SubstanceList } from './types'
 
 import * as util from './util'
-import { CVT_MS_DAY, CAL_HEIGHT_DIFF, RGX_INTEGER, RGX_WORD, RGX_DATE } from './constants'
+import { VERSION, CVT_MS_DAY, CAL_HEIGHT_DIFF, RGX_INTEGER, RGX_WORD, RGX_DATE } from './constants';
 
 
 function get_url_properties() {
@@ -164,6 +164,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     calendar.render();
+
+    util.set_inner('application-version-title', `Timeline-Followback v${VERSION}`);
 
     const editor = new Editor(calendar);
     const file = new File(tlfb_properties, calendar, editor)

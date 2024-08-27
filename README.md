@@ -1,6 +1,11 @@
 # Multisubstance Online Timeline Follow-Back
 
-The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by [Linda C. and Mark B. Sobell](#Credits). This web-based timeline form has beed developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and is designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
+The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by [Linda C. and Mark B. Sobell](#Credits). This web-based timeline form was developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and is designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
+
+A major revision in Typescript was completed in 2024 by Ivy Zhu. The original application was developed by Michael Pascale.
+
+![TLFB Application Screenshot](https://github.com/user-attachments/assets/67d3ff2f-f43f-485c-ac8a-c0b3d0f13d41)
+
 
 ## Prerequisites
 
@@ -73,4 +78,4 @@ Sobell, L. C., & Sobell, M. B. (1992). _Timeline Follow-Back_. In R. Z. Litten &
 
 
 ---
-Source code is copyright (c) 2023, Michael Pascale and distributed under the MIT License.
+Source code is copyright (c) 2024, Ivy Zhu and Michael Pascale and distributed under the MIT License.

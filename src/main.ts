@@ -79,7 +79,7 @@ function get_url_properties() {
 export function update_properties(properties: TLFBProperties, updated: (object | TLFBProperties)) {
     Object.assign(properties, updated)
     
-    const days_apart = ((new Date(properties.end)).valueOf() - (new Date(properties.start)).valueOf()) / CVT_MS_DAY
+    const days_apart = ((new Date(properties.end)).valueOf() - (new Date(properties.start)).valueOf()) / CVT_MS_DAY + 1
 
     properties.days = days_apart
 
@@ -136,12 +136,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const calendarEl: HTMLElement = document.getElementById('calendar')!;
 
+    // FullCalendar end dates are exclusive, add one day so end date shows up
+    const end_day_after = new Date(tlfb_properties.end)
+    end_day_after.setDate(end_day_after.getDate() + 1)
+
     const calendar = new Calendar(calendarEl, {
         plugins: [ interactionPlugin, dayGridPlugin ],
         initialView: "dayGridMonth",
         validRange: {
             start: tlfb_properties.start,
-            end: tlfb_properties.end
+            end: end_day_after.toISOString().split("T")[0]
         },
 
         headerToolbar: {

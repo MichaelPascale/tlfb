@@ -125,9 +125,12 @@ export class File {
                 "staff": data.get("tlfb-staff")!.toString(),
             }
             update_properties(this._current_properties, new_tlfb_properties)
+
+            const end_day_after = new Date(this._current_properties.end)
+            end_day_after.setDate(end_day_after.getDate() + 1)
             this._calendar.setOption('validRange', {
                 start: this._current_properties.start,
-                end: this._current_properties.end
+                end: end_day_after.toISOString().split("T")[0]
             })
         })
     }
@@ -234,7 +237,7 @@ export class File {
 
         // Total number of days each substance was used.
         const etoh_use_days: Number = calculate.calc_days_used(substance_use_events, 'etoh')
-        const mj_use_days: Number = calculate.calc_days_used(substance_use_events, 'cn')
+        const mj_use_days: Number = calculate.calc_days_used(substance_use_events, 'cb')
         const nic_use_days: Number = calculate.calc_days_used(substance_use_events, 'nic')
 
         // Total number of days each substance was used, with amount used known.
@@ -254,7 +257,7 @@ export class File {
         }
 
         // For all other substances, report the total number of occasions.
-        const mj_total_units: Number = calculate.calc_total_occasions(substance_use_events, 'cn')
+        const mj_total_units: Number = calculate.calc_total_occasions(substance_use_events, 'cb')
         const nic_total_units: Number = calculate.calc_total_occasions(substance_use_events, 'nic')
 
         document.getElementById('tlfb_mj_total_units')!.innerHTML = String(mj_total_units);
@@ -277,7 +280,7 @@ export class File {
 
         // Days since last use.
         document.getElementById('tlfb_etoh_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "etoh", today));
-        document.getElementById('tlfb_mj_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "cn", today));
+        document.getElementById('tlfb_mj_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "cb", today));
         document.getElementById('tlfb_nic_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "nic", today));
 
         this._modal_summary.open(() => {
@@ -571,7 +574,7 @@ export class File {
 
                                 updated_events.push(event_object)
                             } else if (event.type === "substance-event") {
-                                const event_category = (event.category === "mj") ? "cn" : event.category
+                                const event_category = (event.category === "mj" || event.category === "cn") ? "cb" : event.category
                                 const method = this_file._substance_list.substance[event_category as string].find((sub) => 
                                     (sub.label).toLowerCase() === (event.substance as string).toLowerCase()
                                 )
@@ -654,7 +657,7 @@ export class File {
                 let substance_string = ""
                 events.forEach((event) => {
                     if (event._type === 'use') {
-                        event._category = (event._category === "mj") ? "cn" : event._category // V2 substance list has "cn" as "mj"
+                        event._category = (event._category === "mj" || event._category === "cn") ? "cb" : event._category // V2 substance list has "cb" as "mj"
                         const substance_info = this_file._substance_list.substance[event._category as string].find((substance: SubstanceInfo) => 
                             substance.label === event._method
                         )

@@ -1,7 +1,7 @@
 {
     "category": [
         {"id": "etoh","label": "Alcohol"},
-        {"id": "cn","label": "Cannabis"},
+        {"id": "cb","label": "Cannabis"},
         {"id": "nic","label": "Nicotine"},
         {"id": "stim","label": "Stimulants"},
         {"id": "coc","label": "Cocaine"},
@@ -16,7 +16,7 @@
         "etoh": [
             {"label": "Alcohol", "units": ["standard drinks"]}
         ],
-        "cn": [
+        "cb": [
             {"label": "Smoked Cannabis", "type": ["Joints", "Blunts", "Bowls", "Bongs"], "units": ["joints", "blunts", "bowls", "bongs", "grams", "milligrams", "ounces", "hits"]},
             {"label": "Vaped Cannabis", "type": ["Vape pen"], "units": ["hits"]},
             {"label": "Spliffs", "alt": "Cannabis/Nicotine Joints", "units": ["spliffs", "grams", "milligrams" ,"hits"]},

@@ -208,11 +208,12 @@ document.addEventListener('DOMContentLoaded', function() {
         );
 
         _substance_list.substance[el.id].forEach((element, index) => {
+            const label = (element.hasOwnProperty('alt')) ? element.label + " (" + element.alt + ")" : element.label 
             _substance_form.insertAdjacentHTML(
                 'beforeend',
                 `<input class="substance-list" type="checkbox" id="${index.toString() + el.id}" name="${index.toString() + el.id}" 
                 value="${index.toString()} ${el.id}">
-                <label for="${index.toString() + el.id}">${element.label}</label><br>`
+                <label for="${index.toString() + el.id}">${label}</label><br>`
             );
         });
     });

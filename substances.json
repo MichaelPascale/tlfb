@@ -33,7 +33,7 @@
             {"label": "E-Cigarettes", "units": ["hits"]},
             {"label": "Hookah", "units": ["hits"]},
             {"label": "Smokeless Tobacco", "alt:": "Chewing Tobacco, Zyns, Snuff", "type": ["Chewing Tobacco", "Nicotine Pouches", "Snuff"], "units": ["milligrams", "pinches"]},
-            {"label": "Other Nioctine", "note": "Substance Name"}
+            {"label": "Other Nicotine", "note": "Substance Name"}
         ],
         "stim": [
             {"label": "Stimulant Medications", "type": ["Ritalin/Concerta", "Adderall", "Vyvanse"], "units": ["tablets", "milligrams"]},
@@ -46,7 +46,7 @@
         "opi": [
             {"label": "Heroin", "type": ["Injected", "Snorted", "Smoked"], "units": ["caps", "grams"]},
             {"label": "Fentanyl", "type": ["Injected", "Snorted", "Smoked", "Oral"], "units": ["micrograms"]},
-            {"label": "Opioid Medications", "type": ["Codeine", "OxyContin", "Vicodin", "Percocet"], "units": ["tablets", "milligrams"], "note": "Substance Name (Not Specified Above)"},
+            {"label": "Opioid Medications", "type": ["Codeine", "OxyContin", "Vicodin", "Percocet", "Other"], "units": ["tablets", "milligrams"], "note": "Substance Name (Not Specified Above)"},
             {"label": "Lean", "alt": "Codeine/Alcohol Drink", "units": ["milligrams", "drinks"]},
             {"label": "Other Opioid", "note": "Substance Name"}
         ],

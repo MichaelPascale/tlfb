@@ -46,7 +46,7 @@
         "opi": [
             {"label": "Heroin", "type": ["Injected", "Snorted", "Smoked"], "units": ["caps", "grams"]},
             {"label": "Fentanyl", "type": ["Injected", "Snorted", "Smoked", "Oral"], "units": ["micrograms"]},
-            {"label": "Opioid Medications", "type": ["Codeine", "OxyContin", "Vicodin", "Percocet", "Other"], "units": ["tablets", "milligrams"], "note": "Substance Name (Not Specified Above)"},
+            {"label": "Opioid Medications", "type": ["Codeine", "OxyContin", "Vicodin", "Percocet", "other"], "units": ["tablets", "milligrams"], "note": "Substance Name (Not Specified Above)"},
             {"label": "Lean", "alt": "Codeine/Alcohol Drink", "units": ["milligrams", "drinks"]},
             {"label": "Other Opioid", "note": "Substance Name"}
         ],

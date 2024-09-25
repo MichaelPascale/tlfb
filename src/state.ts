@@ -187,6 +187,7 @@ export class UseEvent extends CalendarEvent {
     private _category = '';
     private _substance = '';
     private _methodType = '';
+    private _methodTypeOther = "";
     private _method = '';
     private _methodOther = '';
     private _times = 0;
@@ -212,30 +213,32 @@ export class UseEvent extends CalendarEvent {
 
     public get properties(): UseEventProperties {
         return {
-            category:       this._category,
-            substance:      this._substance,
-            methodType:     this._methodType,
-            method:         this._method,
-            methodOther:    this._methodOther,
-            times:          this._times,
-            amount:         this._amount,
-            units:          this._units,
-            unitsOther:     this._unitsOther,
-            note:           this._note
+            category:        this._category,
+            substance:       this._substance,
+            methodType:      this._methodType,
+            methodTypeOther: this._methodTypeOther,
+            method:          this._method,
+            methodOther:     this._methodOther,
+            times:           this._times,
+            amount:          this._amount,
+            units:           this._units,
+            unitsOther:      this._unitsOther,
+            note:            this._note
         };
     }
 
     public set_properties(properties: UseEventProperties): CalendarEvent {
-        this._category    = properties.category;
-        this._substance   = properties.substance;
-        this._methodType  = properties.methodType;
-        this._method      = properties.method;
-        this._methodOther = properties.methodOther;
-        this._times       = properties.times;
-        this._amount      = properties.amount as number;
-        this._units       = properties.units;
-        this._unitsOther  = properties.unitsOther;
-        this._note        = properties.note;
+        this._category       = properties.category;
+        this._substance      = properties.substance;
+        this._methodType     = properties.methodType;
+        this._methodTypeOther = properties.methodTypeOther,
+        this._method         = properties.method;
+        this._methodOther    = properties.methodOther;
+        this._times          = properties.times;
+        this._amount         = properties.amount as number;
+        this._units          = properties.units;
+        this._unitsOther     = properties.unitsOther;
+        this._note           = properties.note;
         this.update_title();
 
         return this;
@@ -434,7 +437,7 @@ export class CalendarEventList {
         switch (as) {
             case 'csv':
                 const rows: (string | number)[][] = [
-                    ["Event", "Date", "Type", "eID", 'gID', 'Title', "Category", "Substance", "MethodType", "Method", "MethodOther", "Times", 
+                    ["Event", "Date", "Type", "eID", 'gID', 'Title', "Category", "Substance", "MethodType", "MethodTypeOther", "Method", "MethodOther", "Times", 
                      "Amount", "Units", "UnitsOther", "Note"]
                 ]
                 

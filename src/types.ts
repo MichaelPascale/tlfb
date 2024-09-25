@@ -21,6 +21,7 @@ export type UseEventProperties = {
     category: string;
     substance: string;
     methodType: string;
+    methodTypeOther: string,
     methodOther: string;
     method: string;
     times: number;

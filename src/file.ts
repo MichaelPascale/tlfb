@@ -324,6 +324,7 @@ export class File {
                         "category": event._category as string,
                         "substance": event._substance as string,
                         "methodType": event._methodType as string,
+                        "methodTypeOther": event._methodTypeOther as string,
                         "method": event._method as string,
                         "methodOther": event._methodOther as string,
                         "times": Number(event._times),
@@ -365,13 +366,14 @@ export class File {
                         "category": event[6] as string,
                         "substance": event[7] as string,
                         "methodType": event[8] as string,
-                        "method": event[9] as string,
-                        "methodOther": event[10] as string,
-                        "times": Number(event[11]),
-                        "amount": (event[12] === "unknown") ? event[12] : Number(event[12]),
-                        "units": event[13] as string,
-                        "unitsOther": event[14] as string,
-                        "note": event[15] as string
+                        "methodTypeOther": event[9] as string,
+                        "method": event[10] as string,
+                        "methodOther": event[11] as string,
+                        "times": Number(event[12]),
+                        "amount": (event[13] === "unknown") ? event[13] : Number(event[13]),
+                        "units": event[14] as string,
+                        "unitsOther": event[15] as string,
+                        "note": event[16] as string
                     }
                     serialized_events.push(new UseEvent(event_date, event_properties))
                 }
@@ -472,10 +474,10 @@ export class File {
 
     public valid_CSV(csv: (string | number)[][]) {
         const title_row = ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", 
-                           "AppVersion", "", "", "", "", "", ""]
-        const event_title_row = ["Event", "Date", "Type", "eID", 'gID', 'Title', "Category", "Substance", "MethodType", 
+                           "AppVersion", "", "", "", "", "", "", ""]
+        const event_title_row = ["Event", "Date", "Type", "eID", 'gID', 'Title', "Category", "Substance", "MethodType", "MethodTypeOther",
                                  "Method", "MethodOther", "Times", "Amount", "Units", "UnitsOther", "Note"]
-        const filler_row = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+        const filler_row = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 
         if (JSON.stringify(csv[0]) != JSON.stringify(title_row)  ||
             JSON.stringify(csv[2]) != JSON.stringify(filler_row) ||
@@ -890,11 +892,11 @@ export class File {
 
         const properties_rows: (string | number)[][] = [
             // Header for csv file, "" as placeholders for empty spaces
-            ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", "AppVersion", "", "", "", "", "", ""],
+            ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", "AppVersion", "", "", "", "", "", "", ""],
             [this._current_properties.subject, this._current_properties.timepoint, this._current_properties.pid, this._current_properties.start, 
              this._current_properties.end, this._current_properties.staff, this._current_properties.record, this._current_properties.keyfield, 
-             (new Date).toISOString(), VERSION, "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] // Empty row for readability 
+             (new Date).toISOString(), VERSION, "", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] // Empty row for readability 
         ]
 
         const events_rows = this._editor.get_event_list().serialize_events('csv')

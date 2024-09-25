@@ -56,11 +56,19 @@ function get_url_properties() {
             if (query.get(param.name) === "") {
                 missing_params.push(param.name)
             } else 
-            if (!param.validator.test(query.get(param.name)!))
-                alert(`${param.name} misspecified in the URL query.`)
-            else
+            if (!param.validator.test(query.get(param.name)!)){
+                // check if dates are entered in yyyy-mm-dd or mm-dd-yyyy format
+                if ((param.to === "start" || param.to === "end") 
+                     && query.get(param.name)![2] === "-") { // in mm-dd-yyyy format
+                    const date_components = query.get(param.name)!.split("-")
+                    console.log(date_components)
+                    props[param.to] = date_components[2] + "-" + date_components[0] + "-" + date_components[1]
+                } else {
+                    alert(`${param.name} misspecified in the URL query.`)}
+                }
+            else    
                 props[param.to] = query.get(param.name)!
-            
+                   
             // query.delete(param.name)
         } else {
             missing_params.push(param.name)
@@ -79,13 +87,23 @@ function get_url_properties() {
 export function update_properties(properties: TLFBProperties, updated: (object | TLFBProperties)) {
     Object.assign(properties, updated)
     
-    const days_apart = ((new Date(properties.end)).valueOf() - (new Date(properties.start)).valueOf()) / CVT_MS_DAY
+    const days_apart = ((new Date(properties.end)).valueOf() - (new Date(properties.start)).valueOf()) / CVT_MS_DAY + 1
 
     properties.days = days_apart
 
+    // Modify title
+    const event_title = properties.timepoint.split("_")
+    const arm_index = event_title.findIndex(word => word === "arm")
+    event_title.splice(arm_index + 1, 1)
+    event_title.splice(arm_index, 1)
+    const new_event_string = event_title.reduce((acc, cur) => {
+        acc = acc + cur[0].toUpperCase() + cur.slice(1) + " "
+        return acc
+    }, "")
+
     util.set_inner(
         'calendar-file-title',
-        `${properties.pid} | ${properties.subject} / ${properties.record} at ${properties.timepoint}`
+        `${properties.pid} | ${properties.subject} / ${properties.record} at ${new_event_string}`
     )
 
     util.set_inner(
@@ -136,12 +154,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const calendarEl: HTMLElement = document.getElementById('calendar')!;
 
+    // FullCalendar end dates are exclusive, add one day so end date shows up
+    const end_day_after = new Date(tlfb_properties.end)
+    end_day_after.setDate(end_day_after.getDate() + 1)
+
     const calendar = new Calendar(calendarEl, {
         plugins: [ interactionPlugin, dayGridPlugin ],
         initialView: "dayGridMonth",
         validRange: {
             start: tlfb_properties.start,
-            end: tlfb_properties.end
+            end: end_day_after.toISOString().split("T")[0]
         },
 
         headerToolbar: {
@@ -186,11 +208,12 @@ document.addEventListener('DOMContentLoaded', function() {
         );
 
         _substance_list.substance[el.id].forEach((element, index) => {
+            const label = (element.hasOwnProperty('alt')) ? element.label + " (" + element.alt + ")" : element.label 
             _substance_form.insertAdjacentHTML(
                 'beforeend',
                 `<input class="substance-list" type="checkbox" id="${index.toString() + el.id}" name="${index.toString() + el.id}" 
                 value="${index.toString()} ${el.id}">
-                <label for="${index.toString() + el.id}">${element.label}</label><br>`
+                <label for="${index.toString() + el.id}">${label}</label><br>`
             );
         });
     });

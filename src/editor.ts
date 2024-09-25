@@ -170,8 +170,28 @@ export class Editor {
         }
     }
 
+    private other_type_options() {
+        const type_options_el = document.getElementById('substance-event-type') as HTMLInputElement
+        const type_other_el = document.getElementById('substance-event-type-other') as HTMLInputElement
+
+        if (type_options_el.value === "other") {
+            type_other_el.disabled = false
+            type_other_el.required = true
+            this._modal_sub_event.setElementClass({
+                '#substance-type-other': ['is-hidden', false]
+            })
+        } else {
+            type_other_el.disabled = true
+            type_other_el.required = false
+            this._modal_sub_event.setElementClass({
+                '#substance-type-other': ['is-hidden', true]
+            })
+        }
+    }
+
     private update_type_options(substance: string, method: string) {
         const type_options_el = document.getElementById('substance-event-type') as HTMLInputElement
+        const type_other_el = document.getElementById('substance-event-type-other') as HTMLInputElement
 
         const substance_info: SubstanceInfo | undefined = this._substance_list.substance[substance].find((sub) => sub.label === method)
 
@@ -198,6 +218,12 @@ export class Editor {
             type_options_el.innerHTML = ""
             type_options_el.disabled = true
         }
+
+        this.other_type_options()
+
+        type_options_el.addEventListener("input", () => {
+            this.other_type_options()
+        })
 
     }
 
@@ -324,6 +350,7 @@ export class Editor {
             "category": data.get('substance-event-category') as string,
             "substance": this._substance_list.category.find(sub => sub.id === data.get('substance-event-category') as string)!.label,
             "methodType": data.get('substance-event-type') as string,
+            "methodTypeOther": data.get('substance-event-type-other') as string,
             "method": data.get('substance-event-method') as string,
             "methodOther": data.get('substance-event-method-other') as string,
             "times": Number(data.get('substance-event-occasions')),
@@ -373,6 +400,7 @@ export class Editor {
                         const properties : UseEventProperties = this.get_substance_event_properties(data)
                         this._event_list.add(new UseEvent(ev.dateStr, properties))
                     })  
+                    console.log(this._event_list)
                 }
                 break;
             case 'no-sub':
@@ -467,6 +495,7 @@ export class Editor {
                         "substance-event-occasions": ((clicked_event as UseEvent).properties.times).toString(),
                         "substance-event-notes": (clicked_event as UseEvent).properties.note,
                         "substance-event-type": (clicked_event as UseEvent).properties.methodType,
+                        "substance-event-type-other": (clicked_event as UseEvent).properties.methodTypeOther
                     }
 
                     if ((clicked_event as UseEvent).properties.amount === "unknown") {
@@ -491,6 +520,7 @@ export class Editor {
                     this.update_unit_options((clicked_event as UseEvent).properties.category, (clicked_event as UseEvent).properties.method)
                     this.update_amount()
                     this._modal_sub_event.populateForm(use_event_data)
+                    this.other_type_options()
 
                     const units_options_el = document.getElementById('substance-event-units') as HTMLInputElement
                     const units_other_el = document.getElementById('substance-event-units-other') as HTMLInputElement

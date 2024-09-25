@@ -12,11 +12,11 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
   <!-- UNCOMMENT THIS LINE WHEN USING WEBPACK SERVE FOR LOCAL DEVELOPMENT -->
-  <!-- <script src="/tlfb-v3-bundle.js"></script> -->
+  <script src="/tlfb-v3-bundle.js"></script>
 
   <!-- USE THIS LINE IN PRODUCTION, COMMENT THIS LINE IN DEVELOPMENT -->
   <!-- Not sure how to get webpack development server to alias the in-memory bundle under the /static/ path. -->
-  <script src="/static/tlfb-v3-bundle.js"></script>
+  <!-- <script src="/static/tlfb-v3-bundle.js"></script> -->
 
   <style>
     #application {
@@ -122,14 +122,14 @@
                     <a class="dropdown-item tlfb-file-mode" id="mode-button-summarize">Summary</a>
 
                     <hr class="dropdown-divider">
-                    <div class="dropdown-item"><b>Import</b></div>
-                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-import-json">From JSON</a>
-                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-import-csv">From CSV</a>
-
-                    <hr class="dropdown-divider">
                     <div class="dropdown-item"><b>Export</b></div>
                     <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-export-json" disabled>To JSON</a>
                     <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-export-csv">To CSV</a>
+
+                    <hr class="dropdown-divider">
+                    <div class="dropdown-item"><b>Import</b></div>
+                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-import-json">From JSON</a>
+                    <a class="dropdown-item pl-5 tlfb-file-mode" id="mode-button-import-csv">From CSV</a>
                   </div>
                 </div>
               </div>
@@ -309,6 +309,11 @@
                           </select>
                         </div>
                       </div>
+
+                      <div class="control" id="substance-type-other">
+                        <label class="label">Type (Other)</label>
+                        <input name="substance-event-type-other"  id="substance-event-type-other" class="input" type="text">
+                      </div>
                     </div>
 
                     <div class="field">
@@ -412,7 +417,7 @@
                     </div>
 
                     <div class="control">
-                      <label class="label">CAM Identifier</label>
+                      <label class="label">Subject Identifier</label>
                       <input id="cam-id" name="cam-identifier" class="input" type="text" placeholder="XXXXX" required>
                     </div>
 

@@ -125,9 +125,12 @@ export class File {
                 "staff": data.get("tlfb-staff")!.toString(),
             }
             update_properties(this._current_properties, new_tlfb_properties)
+
+            const end_day_after = new Date(this._current_properties.end)
+            end_day_after.setDate(end_day_after.getDate() + 1)
             this._calendar.setOption('validRange', {
                 start: this._current_properties.start,
-                end: this._current_properties.end
+                end: end_day_after.toISOString().split("T")[0]
             })
         })
     }
@@ -234,7 +237,7 @@ export class File {
 
         // Total number of days each substance was used.
         const etoh_use_days: Number = calculate.calc_days_used(substance_use_events, 'etoh')
-        const mj_use_days: Number = calculate.calc_days_used(substance_use_events, 'cn')
+        const mj_use_days: Number = calculate.calc_days_used(substance_use_events, 'cb')
         const nic_use_days: Number = calculate.calc_days_used(substance_use_events, 'nic')
 
         // Total number of days each substance was used, with amount used known.
@@ -254,7 +257,7 @@ export class File {
         }
 
         // For all other substances, report the total number of occasions.
-        const mj_total_units: Number = calculate.calc_total_occasions(substance_use_events, 'cn')
+        const mj_total_units: Number = calculate.calc_total_occasions(substance_use_events, 'cb')
         const nic_total_units: Number = calculate.calc_total_occasions(substance_use_events, 'nic')
 
         document.getElementById('tlfb_mj_total_units')!.innerHTML = String(mj_total_units);
@@ -277,7 +280,7 @@ export class File {
 
         // Days since last use.
         document.getElementById('tlfb_etoh_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "etoh", today));
-        document.getElementById('tlfb_mj_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "cn", today));
+        document.getElementById('tlfb_mj_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "cb", today));
         document.getElementById('tlfb_nic_last_use')!.innerHTML = String(calculate.calc_days_since_last_use(substance_use_events, "nic", today));
 
         this._modal_summary.open(() => {
@@ -321,6 +324,7 @@ export class File {
                         "category": event._category as string,
                         "substance": event._substance as string,
                         "methodType": event._methodType as string,
+                        "methodTypeOther": event._methodTypeOther as string,
                         "method": event._method as string,
                         "methodOther": event._methodOther as string,
                         "times": Number(event._times),
@@ -362,13 +366,14 @@ export class File {
                         "category": event[6] as string,
                         "substance": event[7] as string,
                         "methodType": event[8] as string,
-                        "method": event[9] as string,
-                        "methodOther": event[10] as string,
-                        "times": Number(event[11]),
-                        "amount": (event[12] === "unknown") ? event[12] : Number(event[12]),
-                        "units": event[13] as string,
-                        "unitsOther": event[14] as string,
-                        "note": event[15] as string
+                        "methodTypeOther": event[9] as string,
+                        "method": event[10] as string,
+                        "methodOther": event[11] as string,
+                        "times": Number(event[12]),
+                        "amount": (event[13] === "unknown") ? event[13] : Number(event[13]),
+                        "units": event[14] as string,
+                        "unitsOther": event[15] as string,
+                        "note": event[16] as string
                     }
                     serialized_events.push(new UseEvent(event_date, event_properties))
                 }
@@ -469,10 +474,10 @@ export class File {
 
     public valid_CSV(csv: (string | number)[][]) {
         const title_row = ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", 
-                           "AppVersion", "", "", "", "", "", ""]
-        const event_title_row = ["Event", "Date", "Type", "eID", 'gID', 'Title', "Category", "Substance", "MethodType", 
+                           "AppVersion", "", "", "", "", "", "", ""]
+        const event_title_row = ["Event", "Date", "Type", "eID", 'gID', 'Title', "Category", "Substance", "MethodType", "MethodTypeOther",
                                  "Method", "MethodOther", "Times", "Amount", "Units", "UnitsOther", "Note"]
-        const filler_row = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+        const filler_row = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 
         if (JSON.stringify(csv[0]) != JSON.stringify(title_row)  ||
             JSON.stringify(csv[2]) != JSON.stringify(filler_row) ||
@@ -571,7 +576,7 @@ export class File {
 
                                 updated_events.push(event_object)
                             } else if (event.type === "substance-event") {
-                                const event_category = (event.category === "mj") ? "cn" : event.category
+                                const event_category = (event.category === "mj" || event.category === "cn") ? "cb" : event.category
                                 const method = this_file._substance_list.substance[event_category as string].find((sub) => 
                                     (sub.label).toLowerCase() === (event.substance as string).toLowerCase()
                                 )
@@ -654,7 +659,7 @@ export class File {
                 let substance_string = ""
                 events.forEach((event) => {
                     if (event._type === 'use') {
-                        event._category = (event._category === "mj") ? "cn" : event._category // V2 substance list has "cn" as "mj"
+                        event._category = (event._category === "mj" || event._category === "cn") ? "cb" : event._category // V2 substance list has "cb" as "mj"
                         const substance_info = this_file._substance_list.substance[event._category as string].find((substance: SubstanceInfo) => 
                             substance.label === event._method
                         )
@@ -806,7 +811,7 @@ export class File {
                 let substance_string = ""
                 events.forEach((event) => {
                     if (event[2] === 'use') {
-                        const method = ((event[9] as string).includes(".")) ? (event[9] as string).replace(".", ",") : event[9]
+                        const method = ((event[10] as string).includes(".")) ? (event[10] as string).replace(".", ",") : event[10]
                         const substance_info = this_file._substance_list.substance[event[6]].find((substance: SubstanceInfo) => 
                             substance.label === method
                         )
@@ -817,8 +822,8 @@ export class File {
                             imported_substances[event[6]] = [substance_info!]
                         }
 
-                        if (!substance_string.includes(event[9] as string)) {
-                            substance_string = substance_string + event[9] + ", "
+                        if (!substance_string.includes(event[10] as string)) {
+                            substance_string = substance_string + event[10] + ", "
                         }
                     }
                 })
@@ -887,11 +892,11 @@ export class File {
 
         const properties_rows: (string | number)[][] = [
             // Header for csv file, "" as placeholders for empty spaces
-            ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", "AppVersion", "", "", "", "", "", ""],
+            ["Subject", "Event", "pID", "Start", "End", "Staff", "Record", "Keyfield", "Datetime", "AppVersion", "", "", "", "", "", "", ""],
             [this._current_properties.subject, this._current_properties.timepoint, this._current_properties.pid, this._current_properties.start, 
              this._current_properties.end, this._current_properties.staff, this._current_properties.record, this._current_properties.keyfield, 
-             (new Date).toISOString(), VERSION, "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] // Empty row for readability 
+             (new Date).toISOString(), VERSION, "", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] // Empty row for readability 
         ]
 
         const events_rows = this._editor.get_event_list().serialize_events('csv')

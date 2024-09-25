@@ -811,7 +811,7 @@ export class File {
                 let substance_string = ""
                 events.forEach((event) => {
                     if (event[2] === 'use') {
-                        const method = ((event[9] as string).includes(".")) ? (event[9] as string).replace(".", ",") : event[9]
+                        const method = ((event[10] as string).includes(".")) ? (event[10] as string).replace(".", ",") : event[10]
                         const substance_info = this_file._substance_list.substance[event[6]].find((substance: SubstanceInfo) => 
                             substance.label === method
                         )
@@ -822,8 +822,8 @@ export class File {
                             imported_substances[event[6]] = [substance_info!]
                         }
 
-                        if (!substance_string.includes(event[9] as string)) {
-                            substance_string = substance_string + event[9] + ", "
+                        if (!substance_string.includes(event[10] as string)) {
+                            substance_string = substance_string + event[10] + ", "
                         }
                     }
                 })

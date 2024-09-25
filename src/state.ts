@@ -457,7 +457,7 @@ export class CalendarEventList {
                         } else {
                             event_row.push(event_properties.substance)
                         }
-                        event_row.push(event_properties.methodType, event_properties.method, event_properties.methodOther, 
+                        event_row.push(event_properties.methodType, event_properties.methodTypeOther, event_properties.method, event_properties.methodOther, 
                                        event_properties.times, event_properties.amount, event_properties.units, event_properties.unitsOther, 
                                        event_properties.note)
                     }

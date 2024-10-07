@@ -97,7 +97,9 @@ export function update_properties(properties: TLFBProperties, updated: (object |
     event_title.splice(arm_index + 1, 1)
     event_title.splice(arm_index, 1)
     const new_event_string = event_title.reduce((acc, cur) => {
-        acc = acc + cur[0].toUpperCase() + cur.slice(1) + " "
+        if (cur != "") {
+            acc = acc + cur[0].toUpperCase() + cur.slice(1) + " "
+        }
         return acc
     }, "")
 

@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2024, Michael Pascale <mppascale@mgh.harvard.edu>
  *                     Ivy Zhu <izhu1@mgh.harvard.edu>
- * Last modified: 2024-08-16
+ * Last modified: 2025-03-26
  */
 
 //?subject=QO10A&start=2022-07-15&end=2022-08-09&keyfield=record_id
@@ -26,7 +26,7 @@ import { File } from './file'
 import { TLFBProperties, SubstanceList } from './types'
 
 import * as util from './util'
-import { VERSION, CVT_MS_DAY, CAL_HEIGHT_DIFF, RGX_INTEGER, RGX_WORD, RGX_DATE } from './constants';
+import { VERSION, CVT_MS_DAY, CVT_MS_DAY_DST, CAL_HEIGHT_DIFF, RGX_INTEGER, RGX_WORD, RGX_DATE } from './constants';
 
 
 function get_url_properties() {
@@ -158,7 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // FullCalendar end dates are exclusive, add one day so end date shows up
     const end_day_after = new Date(tlfb_properties.end)
-    end_day_after.setDate(end_day_after.getDate() + 1)
+    // manually add 25 hours by milliseconds to account for DST switch
+    end_day_after.setMilliseconds(end_day_after.getMilliseconds() + CVT_MS_DAY_DST)
 
     const calendar = new Calendar(calendarEl, {
         plugins: [ interactionPlugin, dayGridPlugin ],

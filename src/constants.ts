@@ -3,7 +3,7 @@
  * Defines various constants used elsewhere.
  * 
  * Copyright (c) 2024, Michael Pascale <mppascale@mgh.harvard.edu>
- * Last modified: 2024-08-26
+ * Last modified: 2025-03-26
  */
 
 export const VERSION = '3.0.0';
@@ -14,6 +14,10 @@ export const CVT_S_MIN  = 60;
 export const CVT_MIN_HR = 60;
 export const CVT_HR_DAY = 24;
 export const CVT_MS_DAY = CVT_MS_S * CVT_S_MIN * CVT_MIN_HR * CVT_HR_DAY;
+
+// Time conversion factors accounting for DST setback.
+export const CVT_HR_DAY_DST = 25;
+export const CVT_MS_DAY_DST = CVT_MS_S * CVT_S_MIN * CVT_MIN_HR * CVT_HR_DAY_DST;
 
 // The calendar height will be set to window.innerHeight - CAL_HEIGHT_DIFF.
 export const CAL_HEIGHT_DIFF = 205;

@@ -1,6 +1,6 @@
 {
   "name": "tlfb",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Electronic Timeline Follow-Back Form",
   "private": true,
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.partners.org:mpp44/tlfb.git"
+    "url": "https://github.com/MichaelPascale/tlfb.git"
   },
   "keywords": [
     "Timeline",
@@ -24,7 +24,11 @@
     "Cannabis",
     "Drug"
   ],
-  "author": "Michael Pascale",
+  "authors": [
+    "Michael Pascale",
+    "Ivy Zhu",
+    "Bryn Evohr"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.49.0",

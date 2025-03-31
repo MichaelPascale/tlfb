@@ -6,7 +6,7 @@
  * Last modified: 2025-03-26
  */
 
-export const VERSION = '3.0.0';
+export const VERSION = '3.0.1';
 
 // Time conversion factors.
 export const CVT_MS_S = 1000;

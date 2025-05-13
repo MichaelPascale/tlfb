@@ -4,7 +4,7 @@
 * summarizing events, and changing TLFB properties
 * 
 * Copyright (c) 2024, Ivy Zhu <izhu1@mgh.harvard.edu>
-* Last modified: 2024-08-19
+* Last modified: 2025-05-13
 */
 
 import { Modal } from './modal'
@@ -14,6 +14,8 @@ import { Calendar } from '@fullcalendar/core';
 import { CalendarDate, CalendarEvent, UseEvent, NoUseEvent, KeyEvent } from './state';
 
 import * as calculate from './calculate'
+import * as util from './util'
+
 import { Editor } from './editor';
 import { VERSION } from './constants';
 
@@ -126,11 +128,9 @@ export class File {
             }
             update_properties(this._current_properties, new_tlfb_properties)
 
-            const end_day_after = new Date(this._current_properties.end)
-            end_day_after.setDate(end_day_after.getDate() + 1)
             this._calendar.setOption('validRange', {
                 start: this._current_properties.start,
-                end: end_day_after.toISOString().split("T")[0]
+                end: util.next_date(this._current_properties.end)
             })
         })
     }
@@ -693,8 +693,9 @@ export class File {
 
             this._calendar.setOption('validRange', {
                 start: this._current_properties.start,
-                end: this._current_properties.end
+                end: util.next_date(this._current_properties.end)
             }) 
+
             this.merge_selected_substances(imported_substances)
             this._editor.update_substances_used(this._substances_used)
             sessionStorage.setItem('substancesUsed', JSON.stringify(this._substances_used))
@@ -845,7 +846,7 @@ export class File {
             
             this._calendar.setOption('validRange', {
                 start: this._current_properties.start,
-                end: this._current_properties.end
+                end: util.next_date(this._current_properties.end)
             }) 
 
             this.merge_selected_substances(imported_substances)

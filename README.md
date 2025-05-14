@@ -80,6 +80,79 @@ Current versions (v3.0.0+) run entirely in client side JavaScript and do not tra
 
 If the data is to be imported into REDCap, a repeating instrument will be necessary to capture each substance use event. An example form is provided in this [REDCap Instrument ZIP](https://github.com/user-attachments/files/20190265/TimelineFollowback_2025-03-06_1446.zip). Alternatively, you may elect to use your own software to summarize the exported CSV.
 
+## Data Export and Download
+
+After the researcher has completed the procedure, the calendar must be downloaded from the application to be saved temporarily on the researcher's computer. Two export formats are available. Both formats include the metadata passed in via the query string (or modified in the TLFB Properties window), the application version, and the list of substance use events and key events.
+
+### CSV Format
+
+This tabular format include the session metadata in a header. With some modification, the CSV can be uploaded to a [REDCap repeating instrument](https://github.com/user-attachments/files/20190265/TimelineFollowback_2025-03-06_1446.zip). Alternatively, the data file may be stored separately for processing by custom software.
+
+![CSV Format Example](https://github.com/user-attachments/assets/b4bfbfad-33c9-47fc-897a-c0b42260f26f)
+
+### JSON Format
+
+Data may also be exported in JSON format.
+
+<details>
+<summary>Click to expand an example of data stored in JSON format.</summary>
+
+```jsonc
+{
+    "subject": "TEST_001",
+    "event": "visit_4_arm_1",
+    "pid": "0",
+    "start": "2025-04-01",
+    "end": "2025-04-30",
+    "staff": "research assistant",
+    "record": "1",
+    "keyfield": "subject_id",
+    "datetime": "2025-05-14T15:06:09.304Z",
+    "appversion": "3.0.1",
+    "events": [
+        {
+            "_eid": 1,
+            "_gid": 1,
+            "_title": "Smoked Cannabis 5x | 4 hits",
+            "_date": "2025-04-01T00:00:00.000Z",
+            "_type": "use",
+            "_category": "cb",
+            "_substance": "Cannabis",
+            "_methodType": "Bowls",
+            "_methodTypeOther": null,
+            "_method": "Smoked Cannabis",
+            "_methodOther": null,
+            "_times": 5,
+            "_amount": 4,
+            "_units": "hits",
+            "_unitsOther": null,
+            "_note": ""
+        },
+        // Additional substance use events...
+        {
+            "_eid": 76,
+            "_gid": 51,
+            "_title": "Vaped Cannabis 6x | 2 hits",
+            "_date": "2025-04-29T00:00:00.000Z",
+            "_type": "use",
+            "_category": "cb",
+            "_substance": "Cannabis",
+            "_methodType": "Vape pen",
+            "_methodTypeOther": null,
+            "_method": "Vaped Cannabis",
+            "_methodOther": null,
+            "_times": 6,
+            "_amount": 2,
+            "_units": "hits",
+            "_unitsOther": null,
+            "_note": ""
+        }
+    ]
+}
+```
+
+</details>
+
 ## Credits
 
 Sobell L.C., Sobell M.B. (1992) Timeline Follow-Back.

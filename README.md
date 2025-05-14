@@ -1,12 +1,16 @@
 # Multisubstance Online Timeline Follow-Back
 
-The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other drug use patterns developed by [Linda C. and Mark B. Sobell](#Credits). This web-based timeline form was developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and is designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
-
-A major revision in Typescript was completed in 2024 by Ivy Zhu. The original application was developed by Michael Pascale.
+The [timeline follow-back](https://en.wikipedia.org/wiki/Timeline_Followback_Method_Assessment_(Alcohol)) is a method for retrospectively ascertaining recent alcohol and other substance use history, developed by [Linda C. and Mark B. Sobell](#Credits). This software is a web-based timeline form developed for the [MGH Center for Addiction Medicine](http://www.mghaddictionmedicine.com/) and designed for use with [REDCap](https://www.project-redcap.org/) databases in clinical research.
 
 ![TLFB Application Screenshot](https://github.com/user-attachments/assets/67d3ff2f-f43f-485c-ac8a-c0b3d0f13d41)
 
-This software is open source and available without warranty under the terms of the MIT License, which you may find in the LICENSE file. See this [primer on open-source software](https://washu.edu/policies/guide-to-legal-and-ethical-use-of-software/) from WashU if this is not something you are familiar with.
+## Credits
+
+This open-source software[^1] is developed by by Michael Pascale and maintained by Zach Himmelsbach. A major revision in Typescript was finished in 2024 by Ivy Zhu. Additional contributions have been made by Bryn Evohr, Kevin Potter, and Lindsay Nielsen.
+
+Adapted from the the clinical procedure, Sobell L.C. & Sobell M.B. (1992), and from the [timeline follow-back application developed for the Adolescent Brain Cognitive Development](https://github.com/ABCD-STUDY/timeline-followback) study. See also [another application by the University of Washington](https://depts.washington.edu/abrc/tlfb/calendar.cgi).
+
+Made possible with [FullCalendar](https://fullcalendar.io/), [Bulma](https://bulma.io/), TypeScript and Webpack.
 
 ## Prerequisites
 
@@ -68,15 +72,15 @@ Add a Project Bookmark to the REDCap sidebar in your project settings. Using an 
 For example, your project bookmark URL might look like:
   
 ```
-   https://your-web-server.example.com/tlfb/?record=[record-name]&pid=[project-id]&event=[event-name]&subject=[study_level_arm_1][record_subject_id]&start=[tlfb_start_date]&end=[tlfb_end_date]&keyfield=[record_id]&staff=[tlfb_compby]
+https://your-web-server.example.com/tlfb/?record=[record-name]&pid=[project-id]&event=[event-name]&subject=[study_level_arm_1][record_subject_id]&start=[tlfb_start_date]&end=[tlfb_end_date]&keyfield=subject_id&staff=[tlfb_compby]
 ```
 
 The application accepts `record`, `pid`, `event`, `subject`, `start`, `end`, `keyfield`, and `staff` in the query string.
 
 - `start` and `end` define the calendar date range visible for the user to fill in and should be passed in YYYY-MM-DD format. You can use calculated fields to determine the appropriate date range.
-- `keyfield` is the study-specific subject identifier _field name_ (e.g. "subject_id"), if your study uses a subject identifier that is separate from the record identifier. The app collects the subject field name because this is not a standard redcap feature. `subject` is the _actual_ subject identifier (e.g. "S472"). In contrast, the REDCap Record ID (`record`) must exist in all REDCap projets.
+- `keyfield` is the study-specific subject identifier field _name_ (e.g. "subject_id"), if your study uses a subject identifier that is separate from the record identifier. The app collects the subject field name because this is not a standard redcap feature. `subject` is the _actual_ subject identifier (e.g. "S472"). In contrast, the REDCap Record ID (`record`) must exist in all REDCap projets.
 
-Current versions (v3.0.0+) run entirely in client side JavaScript and do not transmit information [^1]. The downloaded CSV may be processed and, optionally, manually imported to a REDCap instrument.
+Current versions (v3.0.0+) run entirely in client side JavaScript and do not transmit information [^2]. The downloaded CSV may be processed and, optionally, manually imported to a REDCap instrument.
 
 If the data is to be imported into REDCap, a repeating instrument will be necessary to capture each substance use event. An example form is provided in this [REDCap Instrument ZIP](https://github.com/user-attachments/files/20190265/TimelineFollowback_2025-03-06_1446.zip). Alternatively, you may elect to use your own software to summarize the exported CSV.
 
@@ -153,14 +157,6 @@ Data may also be exported in JSON format.
 
 </details>
 
-## Credits
-
-Sobell L.C., Sobell M.B. (1992) Timeline Follow-Back.
-
-Adapted from the timeline follow-back application developed for the [Adolescent Brain Cognitive Development](https://github.com/ABCD-STUDY/timeline-followback) study. See also [another application by the University of Washington](https://depts.washington.edu/abrc/tlfb/calendar.cgi).
-
-Made possible with [FullCalendar](https://fullcalendar.io/), [Bulma](https://bulma.io/), TypeScript and Webpack.
-
 ## References
 
 Lisdahl, K. M., Sher, K. J., Conway, K. P., Gonzalez, R., Feldstein Ewing, S. W., Nixon, S. J., Tapert, S., Bartsch, H., Goldstein, R. Z., & Heitzeg, M. (2018). _Adolescent brain cognitive development (ABCD) study: Overview of substance use assessment methods_. Developmental Cognitive Neuroscience, 32, 80–96. https://doi.org/10.1016/j.dcn.2018.02.007
@@ -173,8 +169,10 @@ Sobell, L. C., Brown, J., Leo, G. I., & Sobell, M. B. (1996). _The reliability o
 
 Sobell, L. C., & Sobell, M. B. (1992). _Timeline Follow-Back_. In R. Z. Litten & J. P. Allen (Eds.), Measuring Alcohol Consumption: Psychosocial and Biochemical Methods (pp. 41–72). Humana Press. https://doi.org/10.1007/978-1-4612-0357-5_3
 
-
 ---
-Source code is copyright (c) 2024, Ivy Zhu and Michael Pascale and distributed under the MIT License.
 
-[^1]: Previous versions of the application used the REDCap API to load data into REDCap (See the ABCD study's PHP application) and therefore required data to be transmitted to the webserver. The current version runs in the web browser and does not store data nor transmit data to the server.
+Source code is copyright &copy; 2021-2025 Michael Pascale, &copy; 2024 Ivy Zhu, and distributed under the MIT License.
+
+[^1]: This software is open source and available without warranty under the terms of the MIT License, which you may find in the LICENSE file. See this [primer on open-source software](https://washu.edu/policies/guide-to-legal-and-ethical-use-of-software/) from WashU if this is not something you are familiar with.
+
+[^2]: Previous versions of the application used the REDCap API to load data into REDCap (see the ABCD study's PHP application) and therefore required data to be transmitted to the webserver. The current version runs in the web browser and does not store data nor transmit data to the server.
